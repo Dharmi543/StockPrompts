@@ -87,7 +87,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-6 border-t border-zinc-800 text-xs text-zinc-500 gap-y-2">
       <div>
         Prompts loaded from: <span class="font-mono text-zinc-400">../Analysis</span> (relative to this portal)<br>
-        Generated: 2026-06-14 14:54 • Run <span class="font-mono bg-zinc-900 px-1.5 py-0.5 rounded">generate-prompt-portal.ps1</span> from the PromptPortal folder to refresh.
+        Generated: 2026-06-14 15:38 • Run <span class="font-mono bg-zinc-900 px-1.5 py-0.5 rounded">generate-prompt-portal.ps1</span> from the PromptPortal folder to refresh.
       </div>
       <div class="flex items-center gap-x-4">
         <button onclick="showHelp()" class="hover:text-zinc-300 transition-colors flex items-center gap-x-1.5">
@@ -183,18 +183,18 @@ Renewable Energy
 
 Consumer Goods & Retail
 
-Prioritize actionable opportunities with clear growth catalysts in the current Indian market environment."`,
+Prioritize actionable opportunities with clear growth catalysts in the current Indian market environment.Present in tabular form to understand easily"`,
   'indian_results_week': `Indian Stock Market Earnings Analysis Prompt
 
 Objective
 
-Conduct a comprehensive analysis of Indian stocks (NSE/BSE listed) with quarterly/annual results announcements scheduled for this week (September 16-20, 2025) and provide detailed market intelligence for investment decision-making.
+Conduct a comprehensive analysis of Indian stocks (NSE/BSE listed) with quarterly/annual results announcements scheduled for this week and provide detailed market intelligence for investment decision-making.
 
 Task Requirements
 
 Phase 1: Identify Target Companies
 
-Search and compile a list of Indian companies announcing results this week 
+Search and compile a list of Indian companies announcing results this week
 
 Primary sources: NSE India, BSE India, Moneycontrol, Economic Times Markets
 
@@ -207,6 +207,8 @@ Include the specific result announcement date and time
 Note market cap category (Large-cap, Mid-cap, Small-cap)
 
 Specify if it's Q1/Q2/Q3/Q4 results or annual results
+
+Present in tabular form to understand easily
 
 Phase 2: Latest Market News & Corporate Developments
 
@@ -487,15 +489,7 @@ Factor in FII/DII flow patterns
 Include rural vs. urban market dynamics
 
 Consider China+1 strategy impacts for relevant sectors`,
-  'indian_stock_analysis': `You are an expert stock analyst with access to web search. Analyze the stock **[STOCK NAME / 
-
-TICKER]*
-
-* listed on **[NSE/
-
-BSE]*
-
-*.
+  'indian_stock_analysis': `You are an expert stock analyst with access to web search. Analyze the stock **[STOCK NAME / TICKER]** listed on **[NSE/BSE]**.
 
 Before starting the analysis, search the web for:
 
@@ -529,15 +523,7 @@ Then provide a comprehensive beginner-friendly report:
 
 - What the company does, its sector, and key business segments
 
-- Market cap category (
-
-largecap
-
- / midcap / 
-
-smallcap
-
-)
+- Market cap category (largecap / midcap / smallcap)
 
 - Promoter holding % and any recent changes
 
@@ -551,27 +537,15 @@ smallcap
 
 - Classify each as: 🟢 Positive | 🔴 Negative | 🟡 Neutral
 
-- **News Sentiment 
+- **News Sentiment Score:** Overall Positive / Negative / Mixed
 
-Score:*
-
-* Overall Positive / Negative / Mixed
-
-- **Key upcoming 
-
-events:*
-
-* earnings date, AGM, product launches, regulatory decisions
+- **Key upcoming events:** earnings date, AGM, product launches, regulatory decisions
 
 ---
 
 ## 3. 📊 Fundamental Analysis
 
-**Financial Health (last 3 years trend
-
-):*
-
-*
+**Financial Health (last 3 years trend):**
 
 - Revenue growth
 
@@ -585,11 +559,7 @@ events:*
 
 - Free Cash Flow trend
 
-**Earnings Quality 
-
-Check:*
-
-*
+**Earnings Quality Check:**
 
 - Is profit driven by core operations or one-time items?
 
@@ -601,11 +571,7 @@ Check:*
 
 - Cash conversion cycle — how efficiently is working capital managed?
 
-**
-
-Valuation:*
-
-*
+**Valuation:**
 
 - Current P/E ratio vs industry average
 
@@ -615,17 +581,9 @@ Valuation:*
 
 - PEG Ratio — is growth already priced in?
 
-- Is the stock overvalued, 
+- Is the stock overvalued, fairly valued, or undervalued? Explain briefly.
 
-fairly valued
-
-, or undervalued? Explain briefly.
-
-**Strengths & Red 
-
-Flags:*
-
-*
+**Strengths & Red Flags:**
 
 - List 3–4 fundamental strengths
 
@@ -635,11 +593,7 @@ Flags:*
 
 ## 4. ⚖️ Liabilities & Debt Analysis
 
-**Debt 
-
-Structure:*
-
-*
+**Debt Structure:**
 
 - Total Debt (short-term vs long-term breakdown)
 
@@ -649,11 +603,7 @@ Structure:*
 
 - Interest Coverage Ratio — how many times can earnings cover interest payments?
 
-**Key Liabilities 
-
-Breakdown:*
-
-*
+**Key Liabilities Breakdown:**
 
 - Total current liabilities vs total long-term liabilities
 
@@ -665,11 +615,7 @@ Breakdown:*
 
 - Any recent increase in liabilities — and why
 
-**Liability Health 
-
-Assessment:*
-
-*
+**Liability Health Assessment:**
 
 - Is the debt level sustainable given the business's cash flow?
 
@@ -685,31 +631,19 @@ Assessment:*
 
 ## 5. 🏭 Competitive Moat & Management Quality
 
-**Competitive 
-
-Moat:*
-
-*
+**Competitive Moat:**
 
 - Does the company have a durable competitive advantage?
 
 - Moat type: Brand / Cost Advantage / Network Effect / Switching Costs / Patents / None
 
-- Market share 
-
-trend —
-
- gaining or losing ground to competitors?
+- Market share trend — gaining or losing ground to competitors?
 
 - Pricing power — can it raise prices without losing customers?
 
 - Rate moat strength as: 🟢 Strong | 🟡 Moderate | 🔴 Weak / None
 
-**Management 
-
-Quality:*
-
-*
+**Management Quality:**
 
 - Promoter background and track record
 
@@ -743,23 +677,11 @@ Quality:*
 
 ## 7. 🏦 Institutional & Smart Money Activity
 
-- Promoter holding % trend and 
+- Promoter holding % trend and pledging % — high pledging is a red flag
 
-pledging % —
+- FII holding change (last 2 quarters) — buying or selling?
 
- high pledging is a red flag
-
-- FII holding change (last 2 
-
-quarters) —
-
- buying or selling?
-
-- DII holding change (last 2 
-
-quarters) —
-
- buying or selling?
+- DII holding change (last 2 quarters) — buying or selling?
 
 - Any recent bulk or block deals — large trades signal smart money moves
 
@@ -799,21 +721,13 @@ Compare this stock vs top 3 competitors on:
 
 - Sector rotation — is this sector currently in favor or out of favor?
 
-- Rank among peers
-
-: 🥇 Leader | 🥈
-
- Mid-pack | 🥉 Laggard
+- Rank among peers: 🥇 Leader | 🥈 Mid-pack | 🥉 Laggard
 
 ---
 
 ## 9. 📈 Technical Analysis
 
-**Trend & Price 
-
-Action:*
-
-*
+**Trend & Price Action:**
 
 - Current trend (uptrend / downtrend / sideways)
 
@@ -825,17 +739,9 @@ Action:*
 
 - Maximum historical drawdown — worst fall from peak ever
 
-- Average True Range (
+- Average True Range (ATR) — daily volatility measure
 
-ATR) —
-
- daily volatility measure
-
-**Momentum 
-
-Indicators:*
-
-*
+**Momentum Indicators:**
 
 - MACD signal (bullish / bearish / neutral crossover)
 
@@ -843,15 +749,9 @@ Indicators:*
 
 - Beta — how volatile is this stock vs the broader market?
 
-**🔍 RSI 
+**🔍 RSI Analysis:**
 
-Analysis:*
-
-*
-
-*Current RSI 
-
-Reading:*
+*Current RSI Reading:*
 
 - RSI value on daily chart
 
@@ -859,51 +759,31 @@ Reading:*
 
 - Interpretation: Overbought (>70) / Neutral (30–70) / Oversold (<30)
 
-*RSI Divergence 
-
-Detection:*
+*RSI Divergence Detection:*
 
 Carefully examine both daily and weekly charts for the following:
 
-**Bullish Divergence (Potential Buy Signal
+**Bullish Divergence (Potential Buy Signal):**
 
-):*
+- 🟢 Regular Bullish: Price making lower lows BUT RSI making higher lows
 
-*
+→ Weakening bearish momentum, possible reversal upward
 
-- 🟢 Regular
+- 🟢 Hidden Bullish: Price making higher lows BUT RSI making lower lows
 
- Bullish: Price making lower lows BUT RSI making higher lows
+→ Uptrend continuation, good pullback entry
 
- → Weakening bearish momentum, possible reversal upward
+**Bearish Divergence (Potential Sell Signal):**
 
-- 🟢 Hidden
+- 🔴 Regular Bearish: Price making higher highs BUT RSI making lower highs
 
- Bullish: Price making higher lows BUT RSI making lower lows
+→ Weakening bullish momentum, possible reversal downward
 
- → Uptrend continuation, good pullback entry
+- 🔴 Hidden Bearish: Price making lower highs BUT RSI making higher highs
 
-**Bearish Divergence (Potential Sell Signal
+→ Downtrend continuation, rally may be a trap
 
-):*
-
-*
-
-- 🔴 Regular
-
- Bearish: Price making higher highs BUT RSI making lower highs
-
- → Weakening bullish momentum, possible reversal downward
-
-- 🔴 Hidden
-
- Bearish: Price making lower highs BUT RSI making higher highs
-
- → Downtrend continuation, rally may be a trap
-
-*Divergence Summary 
-
-Table:*
+*Divergence Summary Table:*
 
 | Timeframe | Divergence Type | Price Action | RSI Action | Signal | Strength |
 
@@ -927,11 +807,7 @@ Table:*
 
 - Currency sensitivity — for exporters/importers, INR movement impact
 
-- Commodity exposure — input cost risks (oil, metals, 
-
-agri
-
-)
+- Commodity exposure — input cost risks (oil, metals, agri)
 
 - Interest rate sensitivity — especially for NBFCs, real estate, capital-heavy businesses
 
@@ -955,11 +831,7 @@ agri
 
 ## 12. 🔭 Future Projections
 
-**Earnings & Revenue 
-
-Estimates:*
-
-*
+**Earnings & Revenue Estimates:**
 
 - Analyst consensus EPS estimates for next 1–2 years
 
@@ -967,11 +839,7 @@ Estimates:*
 
 - Expected margin expansion or compression — and why
 
-**Business Growth 
-
-Drivers:*
-
-*
+**Business Growth Drivers:**
 
 - 3–4 key catalysts that could drive growth
 
@@ -979,11 +847,7 @@ Drivers:*
 
 - Management guidance summary (if available)
 
-**Scenario 
-
-Analysis:*
-
-*
+**Scenario Analysis:**
 
 | Scenario | Probability | Key Assumption | Expected Price Range (1 year) |
 
@@ -995,11 +859,7 @@ Analysis:*
 
 | 🐻 Bear Case | % | | ₹ |
 
-**Fair Value 
-
-Estimate:*
-
-*
+**Fair Value Estimate:**
 
 - Estimated intrinsic value range based on forward earnings
 
@@ -1009,19 +869,11 @@ Estimate:*
 
 ## 13. 🎯 Buy / Sell Recommendation
 
-**Overall 
-
-Recommendation:*
-
-*
+**Overall Recommendation:**
 
 State clearly: 🟢 STRONG BUY | 🟦 BUY | 🟡 HOLD | 🟠 REDUCE | 🔴 SELL
 
-**Recommendation 
-
-Rationale:*
-
-*
+**Recommendation Rationale:**
 
 4–5 bullet points covering:
 
@@ -1039,11 +891,7 @@ Rationale:*
 
 - Future growth potential
 
-**For Existing 
-
-Holders:*
-
-*
+**For Existing Holders:**
 
 - Hold, add more, or book partial profits?
 
@@ -1051,31 +899,17 @@ Holders:*
 
 - Stop loss: ₹___
 
-**For New 
-
-Investors:*
-
-*
+**For New Investors:**
 
 - Good time to enter?
 
 - Entry zone: ₹___ to ₹___
 
-- 
-
-Position sizing
-
- 
-
-suggestion
+- Position sizing suggestion
 
 - Recommended investment horizon
 
-**Risk-Reward 
-
-Summary:*
-
-*
+**Risk-Reward Summary:**
 
 | | Level | Price |
 
@@ -1093,11 +927,7 @@ Summary:*
 
 | Downside Risk | % | |
 
-| Risk-Reward Ratio | 
-
-| :
-
- 1 |
+| Risk-Reward Ratio | | : 1 |
 
 ---
 
@@ -1147,93 +977,45 @@ Write this section as if explaining to a friend who knows nothing about stock ma
 
 Use simple language, no jargon, no technical terms. Cover the following in short paragraphs:
 
-**What does this company 
-
-do?*
-
-*
+**What does this company do?**
 
 [2–3 lines on the business in everyday language]
 
-**Is the company financially 
-
-healthy?*
-
-*
+**Is the company financially healthy?**
 
 [Is it making money? Is it drowning in debt? Is cash flow strong?]
 
-**What are the biggest 
-
-risks?*
-
-*
+**What are the biggest risks?**
 
 [Top 2–3 things that could go wrong — in plain terms]
 
-**What are the biggest 
-
-opportunities?*
-
-*
+**What are the biggest opportunities?**
 
 [Top 2–3 reasons this stock could do well — in plain terms]
 
-**What is 
-
-the smart
-
- money 
-
-doing?*
-
-*
+**What is the smart money doing?**
 
 [Are big investors (FIIs, DIIs, promoters) buying or running away?]
 
-**Is the stock cheap or expensive right 
-
-now?*
-
-*
+**Is the stock cheap or expensive right now?**
 
 [Simple valuation take — bargain, fair price, or overpriced?]
 
-**What do the charts 
-
-say?*
-
-*
+**What do the charts say?**
 
 [Is the price going up, down, or sideways? Any warning signs or green flags?]
 
-**What could happen in the next 1 
-
-year?*
-
-*
+**What could happen in the next 1 year?**
 
 [Best case, worst case, and most likely outcome — in plain English]
 
-**So... should I buy, hold, or 
-
-sell?*
-
-*
+**So... should I buy, hold, or sell?**
 
 [Final straight-talking recommendation with simple reasoning]
 
-**One line 
+**One line verdict:**
 
-verdict:*
-
-*
-
-"This stock 
-
-is __
-
-________ because __________."
+"This stock is __________ because __________."
 
 ---`,
   'indian_stock_predictions': `You are an Indian stock market analyst specializing in NSE/BSE listed companies.
@@ -1345,14 +1127,14 @@ Potential Impact on stock performance
 
 Recent Price Movement context if relevant
 
-Focus on actionable opportunities with clear catalysts for potential growth. Include both large-cap and mid-cap opportunities across different sectors."`,
+Focus on actionable opportunities with clear catalysts for potential growth. Include both large-cap and mid-cap opportunities across different sectors. Present in tabular form to understand easily"`,
   'usa_results_week': `Conduct a comprehensive analysis of stocks with earnings announcements scheduled for this week and provide detailed market intelligence for investment decision-making.
 
 Task Requirements
 
 Phase 1: Identify Target Companies
 
-Search and compile a list of companies announcing earnings this week 
+Search and compile a list of companies announcing earnings this week
 
 Use multiple sources: Yahoo Finance, Nasdaq, Seeking Alpha, TradingView, Earnings Whispers
 
@@ -1361,6 +1143,8 @@ Focus on major public companies (preferably S&P 500, NASDAQ 100, or significant 
 Include the specific earnings announcement date and time
 
 Note whether it's before market open (BMO) or after market close (AMC)
+
+Present in tabular form to understand easily
 
 Phase 2: Latest Market News & Developments
 
@@ -1529,19 +1313,7 @@ Data-driven analysis with specific figures and dates
 Actionable insights for investment decision-making
 
 Up-to-date information as of the analysis date`,
-  'usa_stock_analysis': `You are an expert stock analyst with access to web search. 
-
-Analyze
-
- the stock **[STOCK NAME / 
-
-TICKER]*
-
-* listed on **[NYSE/
-
-NASDAQ]*
-
-*.
+  'usa_stock_analysis': `You are an expert stock analyst with access to web search. Analyze the stock **[STOCK NAME / TICKER]** listed on **[NYSE/NASDAQ]**.
 
 Before starting the analysis, search the web for:
 
@@ -1593,39 +1365,23 @@ Then provide a comprehensive beginner-friendly report:
 
 - Classify each as: 🟢 Positive | 🔴 Negative | 🟡 Neutral
 
-- **News Sentiment 
+- **News Sentiment Score:** Overall Positive / Negative / Mixed
 
-Score:*
+- **Key upcoming events:** earnings date, Fed meetings, product launches,
 
-* Overall Positive / Negative / Mixed
-
-- **Key upcoming 
-
-events:*
-
-* earnings date, Fed meetings, product launches,
-
- FDA approvals (if pharma), regulatory decisions, investor days
+FDA approvals (if pharma), regulatory decisions, investor days
 
 ---
 
 ## 3. 📊 Fundamental Analysis
 
-**Financial Health (last 3 years trend
-
-):*
-
-*
+**Financial Health (last 3 years trend):**
 
 - Revenue growth (YoY and QoQ)
 
 - Net Profit & Net Profit Margin
 
-- EPS (Earnings Per Share) — GAAP vs 
-
-Non-GAAP
-
- (note difference)
+- EPS (Earnings Per Share) — GAAP vs Non-GAAP (note difference)
 
 - Gross Margin and Operating Margin trend
 
@@ -1635,19 +1391,11 @@ Non-GAAP
 
 - Free Cash Flow trend
 
-**Earnings Quality 
-
-Check:*
-
-*
+**Earnings Quality Check:**
 
 - Is profit driven by core operations or one-time items?
 
-- GAAP vs 
-
-Non-GAAP
-
- gap — large differences are a warning sign
+- GAAP vs Non-GAAP gap — large differences are a warning sign
 
 - Operating Cash Flow (OCF) vs Net Profit — are they aligned?
 
@@ -1659,11 +1407,7 @@ Non-GAAP
 
 - Revenue recognition policies — any aggressive accounting concerns?
 
-**
-
-Valuation:*
-
-*
+**Valuation:**
 
 - Current P/E ratio (GAAP and Forward) vs sector average
 
@@ -1671,27 +1415,15 @@ Valuation:*
 
 - P/B ratio (Price-to-Book)
 
-- EV/EBITDA — enterprise 
-
-value based
-
- valuation
+- EV/EBITDA — enterprise value based valuation
 
 - FCF yield (Free Cash Flow / Market Cap)
 
 - PEG Ratio — is growth already priced in?
 
-- Is the stock overvalued, 
+- Is the stock overvalued, fairly valued, or undervalued? Explain briefly.
 
-fairly valued
-
-, or undervalued? Explain briefly.
-
-**Strengths & Red 
-
-Flags:*
-
-*
+**Strengths & Red Flags:**
 
 - List 3–4 fundamental strengths
 
@@ -1701,11 +1433,7 @@ Flags:*
 
 ## 4. ⚖️ Liabilities & Debt Analysis
 
-**Debt 
-
-Structure:*
-
-*
+**Debt Structure:**
 
 - Total Debt (short-term vs long-term breakdown)
 
@@ -1717,11 +1445,7 @@ Structure:*
 
 - Net Debt vs Net Cash position — does it have more cash than debt?
 
-**Key Liabilities 
-
-Breakdown:*
-
-*
+**Key Liabilities Breakdown:**
 
 - Total current liabilities vs total long-term liabilities
 
@@ -1737,11 +1461,7 @@ Breakdown:*
 
 - Any recent increase in liabilities — and why
 
-**Liability Health 
-
-Assessment:*
-
-*
+**Liability Health Assessment:**
 
 - Is the debt level sustainable given cash flow?
 
@@ -1757,17 +1477,13 @@ Assessment:*
 
 ## 5. 🏭 Competitive Moat & Management Quality
 
-**Competitive 
-
-Moat:*
-
-*
+**Competitive Moat:**
 
 - Does the company have a durable competitive advantage?
 
 - Moat type: Brand / Cost Advantage / Network Effect /
 
- Switching Costs / Patents / Regulatory License / None
+Switching Costs / Patents / Regulatory License / None
 
 - Market share trend — gaining or losing ground?
 
@@ -1775,11 +1491,7 @@ Moat:*
 
 - Rate moat strength as: 🟢 Strong | 🟡 Moderate | 🔴 Weak / None
 
-**Management 
-
-Quality:*
-
-*
+**Management Quality:**
 
 - CEO/CFO background, tenure, and track record
 
@@ -1871,15 +1583,7 @@ Compare this stock vs top 3 competitors on:
 
 - Relative strength vs S&P 500 — outperforming or underperforming?
 
-- Sector rotation — is this sector currently in 
-
-favor
-
- or out of 
-
-favor
-
-?
+- Sector rotation — is this sector currently in favor or out of favor?
 
 - Rank among peers: 🥇 Leader | 🥈 Mid-pack | 🥉 Laggard
 
@@ -1887,11 +1591,7 @@ favor
 
 ## 9. 📈 Technical Analysis
 
-**Trend & Price 
-
-Action:*
-
-*
+**Trend & Price Action:**
 
 - Current trend (uptrend / downtrend / sideways)
 
@@ -1903,17 +1603,13 @@ Action:*
 
 - Any notable chart patterns (Head & Shoulders, Cup & Handle,
 
- Double Top/Bottom, Flag, Wedge etc.)
+Double Top/Bottom, Flag, Wedge etc.)
 
 - Maximum historical drawdown — worst fall from peak ever
 
 - Average True Range (ATR) — daily volatility measure
 
-**Momentum 
-
-Indicators:*
-
-*
+**Momentum Indicators:**
 
 - MACD signal (bullish / bearish / neutral crossover)
 
@@ -1923,15 +1619,9 @@ Indicators:*
 
 - Bollinger Bands — is price near upper or lower band?
 
-**🔍 RSI 
+**🔍 RSI Analysis:**
 
-Analysis:*
-
-*
-
-*Current RSI 
-
-Reading:*
+*Current RSI Reading:*
 
 - RSI value on daily chart
 
@@ -1939,43 +1629,31 @@ Reading:*
 
 - Interpretation: Overbought (>70) / Neutral (30–70) / Oversold (<30)
 
-*RSI Divergence 
-
-Detection:*
+*RSI Divergence Detection:*
 
 Carefully examine both daily and weekly charts for:
 
-**Bullish Divergence (Potential Buy Signal
-
-):*
-
-*
+**Bullish Divergence (Potential Buy Signal):**
 
 - 🟢 Regular Bullish: Price making lower lows BUT RSI making higher lows
 
- → Weakening bearish momentum, possible reversal upward
+→ Weakening bearish momentum, possible reversal upward
 
 - 🟢 Hidden Bullish: Price making higher lows BUT RSI making lower lows
 
- → Uptrend continuation, good pullback entry point
+→ Uptrend continuation, good pullback entry point
 
-**Bearish Divergence (Potential Sell Signal
-
-):*
-
-*
+**Bearish Divergence (Potential Sell Signal):**
 
 - 🔴 Regular Bearish: Price making higher highs BUT RSI making lower highs
 
- → Weakening bullish momentum, possible reversal downward
+→ Weakening bullish momentum, possible reversal downward
 
 - 🔴 Hidden Bearish: Price making lower highs BUT RSI making higher highs
 
- → Downtrend continuation, rally may be a trap
+→ Downtrend continuation, rally may be a trap
 
-*Divergence Summary 
-
-Table:*
+*Divergence Summary Table:*
 
 | Timeframe | Divergence Type | Price Action | RSI Action | Signal | Strength |
 
@@ -2005,11 +1683,7 @@ Table:*
 
 - Geopolitical risks — supply chain, China exposure, trade tariffs
 
-- Government policy tailwinds/headwinds (IRA, CHIPS Act, 
-
-defense
-
- budgets etc.)
+- Government policy tailwinds/headwinds (IRA, CHIPS Act, defense budgets etc.)
 
 - Commodity exposure (oil, semiconductors, rare earth metals)
 
@@ -2033,11 +1707,7 @@ defense
 
 ## 12. 🔭 Future Projections
 
-**Earnings & Revenue 
-
-Estimates:*
-
-*
+**Earnings & Revenue Estimates:**
 
 - Wall Street consensus EPS estimates for next 1–2 years
 
@@ -2047,11 +1717,7 @@ Estimates:*
 
 - Earnings surprise history — does this company beat or miss estimates?
 
-**Business Growth 
-
-Drivers:*
-
-*
+**Business Growth Drivers:**
 
 - 3–4 key catalysts that could drive growth
 
@@ -2061,11 +1727,7 @@ Drivers:*
 
 - Management guidance and long-term targets
 
-**Scenario 
-
-Analysis:*
-
-*
+**Scenario Analysis:**
 
 | Scenario | Probability | Key Assumption | Expected Price Range (1 year) |
 
@@ -2077,11 +1739,7 @@ Analysis:*
 
 | 🐻 Bear Case | % | | $ |
 
-**Fair Value 
-
-Estimate:*
-
-*
+**Fair Value Estimate:**
 
 - Estimated intrinsic value range based on forward earnings / DCF
 
@@ -2093,19 +1751,11 @@ Estimate:*
 
 ## 13. 🎯 Buy / Sell Recommendation
 
-**Overall 
-
-Recommendation:*
-
-*
+**Overall Recommendation:**
 
 State clearly: 🟢 STRONG BUY | 🟦 BUY | 🟡 HOLD | 🟠 REDUCE | 🔴 SELL
 
-**Recommendation 
-
-Rationale:*
-
-*
+**Recommendation Rationale:**
 
 4–5 bullet points covering:
 
@@ -2123,11 +1773,7 @@ Rationale:*
 
 - Future growth potential and earnings trajectory
 
-**For Existing 
-
-Holders:*
-
-*
+**For Existing Holders:**
 
 - Hold, add more, or book partial profits?
 
@@ -2135,11 +1781,7 @@ Holders:*
 
 - Stop loss: $___
 
-**For New 
-
-Investors:*
-
-*
+**For New Investors:**
 
 - Good time to enter?
 
@@ -2149,11 +1791,7 @@ Investors:*
 
 - Recommended investment horizon
 
-**Risk-Reward 
-
-Summary:*
-
-*
+**Risk-Reward Summary:**
 
 | | Level | Price |
 
@@ -2171,11 +1809,7 @@ Summary:*
 
 | Downside Risk | % | |
 
-| Risk-Reward Ratio | 
-
-| :
-
- 1 |
+| Risk-Reward Ratio | | : 1 |
 
 ---
 
@@ -2225,95 +1859,47 @@ Write this section as if explaining to a friend who knows nothing about
 
 stock markets. Use simple language, no jargon, no technical terms.
 
-**What does this company 
-
-do?*
-
-*
+**What does this company do?**
 
 [2–3 lines on the business in everyday language]
 
-**Is the company financially 
-
-healthy?*
-
-*
+**Is the company financially healthy?**
 
 [Is it making money? Is it drowning in debt? Is cash flow strong?]
 
-**What are the biggest 
-
-risks?*
-
-*
+**What are the biggest risks?**
 
 [Top 2–3 things that could go wrong — in plain terms]
 
-**What are the biggest 
-
-opportunities?*
-
-*
+**What are the biggest opportunities?**
 
 [Top 2–3 reasons this stock could do well — in plain terms]
 
-**What is the smart money 
-
-doing?*
-
-*
+**What is the smart money doing?**
 
 [Are big funds, insiders buying or selling? What does short interest say?]
 
-**Is the stock cheap or expensive right 
-
-now?*
-
-*
+**Is the stock cheap or expensive right now?**
 
 [Simple valuation take — bargain, fair price, or overpriced?]
 
-**What do the charts 
-
-say?*
-
-*
+**What do the charts say?**
 
 [Is the price going up, down, or sideways? Any warning signs or green flags?]
 
-**How sensitive is this stock to the economy & 
-
-Fed?*
-
-*
+**How sensitive is this stock to the economy & Fed?**
 
 [Will it get hurt by rate hikes, recession, or dollar strength?]
 
-**What could happen in the next 1 
-
-year?*
-
-*
+**What could happen in the next 1 year?**
 
 [Best case, worst case, and most likely outcome — in plain English]
 
-**
-
-So.
-
-.. should I buy, hold, or 
-
-sell?*
-
-*
+**So... should I buy, hold, or sell?**
 
 [Final straight-talking recommendation with simple reasoning]
 
-**One line 
-
-verdict:*
-
-*
+**One line verdict:**
 
 "This stock is __________ because __________."`,
   'usa_stock_predictions': `You are a US stock market analyst specializing in NYSE and NASDAQ listed companies.

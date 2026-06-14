@@ -36,3 +36,14 @@ FILES
 
 Created: 2026-06-14
 Prompts source: ../Analysis (relative to PromptPortal)
+
+VERIFICATION TIP
+----------------
+Every time you run generate-prompt-portal.ps1, it now prints a line for each of the 8 prompts:
+  [OK]   Indian Market News             1570 chars  | Indian Stock Market Analysis Prompt: "Please identify...
+
+- Look for [OK] on all 8 lines.
+- The preview after the | should look like the beginning of your prompt in the .docx.
+- If you see [ERROR] or very short length, something went wrong with that specific document — check the .docx or share the output here.
+
+The extraction was upgraded (June 2026) to use real XML parsing instead of fragile regex, so it should now reliably pull the full prompt text from your Word documents.

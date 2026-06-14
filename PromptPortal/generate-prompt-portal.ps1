@@ -34,24 +34,52 @@ function Get-DocxPlainText([string]$Path) {
         $entry = $zip.GetEntry('word/document.xml')
         if (-not $entry) { $zip.Dispose(); return "[NO DOCUMENT XML]" }
         $reader = New-Object System.IO.StreamReader($entry.Open(), [System.Text.Encoding]::UTF8)
-        $xml = $reader.ReadToEnd()
+        $xmlContent = $reader.ReadToEnd()
         $reader.Dispose(); $zip.Dispose()
 
-        $text = [regex]::Replace($xml, '<w:p[^>]*>', "`n`n")
-        $text = [regex]::Replace($text, '<[^>]+>', '')
-        $text = $text -replace '&amp;', '&' -replace '&lt;', '<' -replace '&gt;', '>' `
-                      -replace '&quot;', '"' -replace '&#39;', "'" `
-                      -replace '&#x201C;', '"' -replace '&#x201D;', '"' `
-                      -replace '&#x2018;', "'" -replace '&#x2019;', "'"
-        $text = [regex]::Replace($text, ' {2,}', ' ').Trim()
-        $text = [regex]::Replace($text, "`n{3,}", "`n`n")
-        if ($text.Length -lt 15) {
-            $matches = [regex]::Matches($xml, '<w:t[^>]*>([^<]*)</w:t>')
-            $parts = foreach ($m in $matches) { $m.Groups[1].Value }
-            $text = ($parts -join ' ').Trim()
-            $text = [regex]::Replace($text, '\s+', ' ')
+        # Proper XML parsing with namespace (much more reliable than regex for .docx)
+        $doc = [xml]$xmlContent
+        $nsMgr = New-Object System.Xml.XmlNamespaceManager($doc.NameTable)
+        $nsMgr.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main")
+
+        $paragraphs = @()
+
+        # Prefer paragraphs inside the main body for accuracy
+        $body = $doc.SelectSingleNode("//w:body", $nsMgr)
+        $searchRoot = if ($body) { $body } else { $doc }
+
+        $paraNodes = $searchRoot.SelectNodes(".//w:p", $nsMgr)
+
+        foreach ($p in $paraNodes) {
+            # Collect all text runs (w:t), deleted text, etc.
+            $textParts = $p.SelectNodes(".//w:t | .//w:delText", $nsMgr) | ForEach-Object { $_.InnerText }
+
+            $paraText = ($textParts -join "").Trim()
+
+            # Handle simple line breaks inside paragraph
+            $breaks = $p.SelectNodes(".//w:br | .//w:cr", $nsMgr)
+            if ($breaks.Count -gt 0 -and $paraText) {
+                # Very basic handling - treat breaks as space for prompts (most are single line instructions)
+            }
+
+            if ($paraText) {
+                $paragraphs += $paraText
+            }
         }
-        return $text
+
+        $result = $paragraphs -join "`n`n"
+
+        # Strong fallback: collect EVERY text node in the document if we got almost nothing
+        if ([string]::IsNullOrWhiteSpace($result) -or $result.Length -lt 30) {
+            $allText = $doc.SelectNodes("//w:t | //w:delText", $nsMgr) | ForEach-Object { $_.InnerText }
+            $result = ($allText -join " ").Trim()
+            $result = [regex]::Replace($result, '\s+', ' ')
+        }
+
+        # Final cleanup
+        $result = $result -replace ' {2,}', ' '
+        $result = $result -replace "`n{3,}", "`n`n"
+        return $result.Trim()
     } catch {
         return "[EXTRACTION ERROR: $($_.Exception.Message)]"
     }
@@ -80,13 +108,19 @@ $entries = @(
 # Using ../Analysis so the whole Analysis folder (with prompts) can be moved frequently.
 $sourcePrefix = '../Analysis'
 
-Write-Host "Extracting prompts..." -ForegroundColor Cyan
+Write-Host "Extracting prompts from ../Analysis (using robust XML parser)..." -ForegroundColor Cyan
 $promptTexts = @{}
 foreach ($e in $entries) {
     $p = Join-Path $analysisRoot $e.rel
     $txt = Get-DocxPlainText $p
     $promptTexts[$e.id] = $txt
-    Write-Host ("  {0,-28} {1,6} chars" -f $e.title, $txt.Length) -ForegroundColor Green
+
+    $preview = if ($txt.Length -gt 0) { 
+        ($txt.Substring(0, [Math]::Min(90, $txt.Length)) -replace "`r?`n", " ").Trim() + "..."
+    } else { "[empty]" }
+
+    $status = if ($txt.StartsWith("[")) { "ERROR" } else { "OK" }
+    Write-Host ("  [{0}] {1,-28} {2,6} chars  | {3}" -f $status, $e.title, $txt.Length, $preview) -ForegroundColor $(if ($status -eq "OK") { "Green" } else { "Red" })
 }
 
 # Build the JS snippets that will be injected
