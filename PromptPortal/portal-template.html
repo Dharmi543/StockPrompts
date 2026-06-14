@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analysis Prompts Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
+    body { font-family: 'Inter', system_ui, sans-serif; }
+    .font-display { font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif; font-weight: 600; }
+    .prompt-card { transition: transform .2s cubic-bezier(.4,0,.2,1), box-shadow .2s cubic-bezier(.4,0,.2,1), border-color .2s; }
+    .prompt-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+    .india-card { border-color: #f59e0b; }
+    .india-card:hover { border-color: #d97706; }
+    .usa-card { border-color: #3b82f6; }
+    .usa-card:hover { border-color: #2563eb; }
+    .modal { animation: modalPop .2s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes modalPop {
+      from { opacity:0; transform: scale(.95) translateY(20px); }
+      to { opacity:1; transform: scale(1) translateY(0); }
+    }
+    .prompt-text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; line-height:1.65; font-size:.95rem; }
+    .section-header { font-size:.75rem; letter-spacing:.05em; text-transform:uppercase; font-weight:600; }
+    .prompt-button { position:relative; overflow:hidden; }
+    .prompt-button::after {
+      content:''; position:absolute; top:-50%; left:-100%; width:50%; height:200%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent); transition:left .6s;
+    }
+    .prompt-button:hover::after { left:250%; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200">
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="flex items-center justify-between mb-10">
+      <div class="flex items-center gap-x-4">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-inner">
+          <i class="fa-solid fa-file-lines text-white text-3xl"></i>
+        </div>
+        <div>
+          <h1 class="text-4xl font-display tracking-tighter">Prompts Portal</h1>
+          <p class="text-zinc-400 text-sm -mt-1">Analysis • India & USA Markets</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-x-3 text-sm">
+        <div class="px-3 py-1.5 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center gap-x-2">
+          <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+          <span class="text-emerald-400 font-medium">8 Prompts Ready</span>
+        </div>
+        <button onclick="copyAllPaths()" class="px-3 py-1.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 flex items-center gap-x-2 text-sm transition-colors">
+          <i class="fa-solid fa-copy"></i>
+          <span>Copy paths</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mb-8 flex items-center gap-2 text-xs text-zinc-500">
+      <i class="fa-solid fa-info-circle"></i>
+      <span>Click any card to view the prompt. <strong>Every prompt includes today's date</strong> (IST for India, CST for USA). The portal loads prompts from the sibling <span class="font-mono">../Analysis</span> folder so you can move the Analysis location freely.</span>
+    </div>
+
+    <!-- INDIA -->
+    <div class="mb-6">
+      <div class="flex items-center gap-x-3 mb-4">
+        <span class="text-3xl">🇮🇳</span>
+        <div>
+          <span class="section-header text-amber-400">INDIA</span>
+          <span class="ml-2 text-zinc-400 text-sm">NSE / BSE focused prompts</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="india-grid"></div>
+    </div>
+
+    <!-- USA -->
+    <div class="mb-12">
+      <div class="flex items-center gap-x-3 mb-4">
+        <span class="text-3xl">🇺🇸</span>
+        <div>
+          <span class="section-header text-blue-400">USA</span>
+          <span class="ml-2 text-zinc-400 text-sm">NYSE / NASDAQ focused prompts</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="usa-grid"></div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-6 border-t border-zinc-800 text-xs text-zinc-500 gap-y-2">
+      <div>
+        Prompts loaded from: <span class="font-mono text-zinc-400">../Analysis</span> (relative to this portal)<br>
+        Generated: __DATE__ • Run <span class="font-mono bg-zinc-900 px-1.5 py-0.5 rounded">generate-prompt-portal.ps1</span> from the PromptPortal folder to refresh.
+      </div>
+      <div class="flex items-center gap-x-4">
+        <button onclick="showHelp()" class="hover:text-zinc-300 transition-colors flex items-center gap-x-1.5">
+          <i class="fa-solid fa-question-circle"></i> <span>How to use</span>
+        </button>
+        <a href=".." class="hover:text-zinc-300 transition-colors flex items-center gap-x-1.5">
+          <i class="fa-solid fa-folder-open"></i> <span>Browse parent</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modal" onclick="if (event.target.id === 'modal') closeModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopImmediatePropagation()" class="modal w-full max-w-3xl bg-zinc-900 border border-zinc-700 rounded-3xl shadow-2xl overflow-hidden">
+      <div class="px-6 pt-5 pb-4 border-b border-zinc-800 flex items-start justify-between">
+        <div class="flex items-center gap-x-3" id="modal-header"></div>
+        <button onclick="closeModal()" class="text-zinc-400 hover:text-white p-2 -mr-2 -mt-1 rounded-2xl hover:bg-zinc-800 transition-colors">
+          <i class="fa-solid fa-times text-xl"></i>
+        </button>
+      </div>
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-2 px-1">
+          <div class="uppercase tracking-widest text-[10px] font-semibold text-zinc-500">PROMPT TEXT</div>
+          <div class="text-xs text-zinc-500" id="modal-char-count"></div>
+        </div>
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 max-h-[52vh] overflow-auto">
+          <pre id="modal-prompt-text" class="prompt-text whitespace-pre-wrap text-zinc-300 select-text leading-relaxed"></pre>
+        </div>
+      </div>
+      <div class="px-6 py-4 bg-zinc-950 border-t border-zinc-800 flex flex-wrap gap-3 items-center">
+        <button onclick="copyCurrentPrompt()" class="flex-1 sm:flex-none px-5 py-3 bg-white text-zinc-900 hover:bg-zinc-100 active:bg-white transition-all font-semibold rounded-2xl flex items-center justify-center gap-x-2 text-sm shadow-inner">
+          <i class="fa-solid fa-copy"></i> <span>Copy Prompt to Clipboard</span>
+        </button>
+        <button onclick="copySourcePath()" class="flex-1 sm:flex-none px-4 py-3 bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-800 border border-zinc-700 transition-colors font-medium rounded-2xl flex items-center justify-center gap-x-2 text-sm">
+          <i class="fa-solid fa-file-word"></i> <span>Copy .docx path</span>
+        </button>
+        <button onclick="closeModal()" class="px-5 py-3 text-sm text-zinc-400 hover:text-zinc-200 transition-colors">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="fixed bottom-4 right-4 z-[60] flex flex-col gap-2"></div>
+
+  <script>
+    // DATA (injected by generator - do not edit)
+    __PROMPTS_JS__
+    __META_JS__
+
+    let currentPromptId = null;
+
+    function getCurrentDateLine(region) {
+      const now = new Date();
+      const tz = (region === 'India') ? 'Asia/Kolkata' : 'America/Chicago';
+      const label = (region === 'India') ? 'IST' : 'CST';
+      // en-CA gives stable YYYY-MM-DD; timeZone forces the correct market date
+      const ymd = now.toLocaleDateString('en-CA', { timeZone: tz });
+      return `Current date (${label}): ${ymd}`;
+    }
+
+    function createCard(meta) {
+      const isIndia = meta.region === 'India';
+      const cardClass = isIndia ? 'india-card border-amber-500/60 hover:border-amber-400' : 'usa-card border-blue-500/60 hover:border-blue-400';
+      const badgeClass = isIndia ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400';
+      const div = document.createElement('div');
+      div.className = `prompt-card group cursor-pointer bg-zinc-900 border ${cardClass} rounded-3xl p-5 flex flex-col`;
+      div.innerHTML = `
+        <div class="flex items-start justify-between mb-3">
+          <div class="text-3xl transition-transform group-hover:scale-110 duration-200">${meta.emoji}</div>
+          <div class="${badgeClass} text-xs font-medium px-2.5 py-px rounded-full self-start">${meta.region}</div>
+        </div>
+        <div class="font-semibold text-lg leading-tight tracking-tight mb-1 pr-1">${meta.title}</div>
+        <div class="text-zinc-400 text-sm mb-4 line-clamp-2">${meta.subtitle}</div>
+        <div class="mt-auto pt-3 border-t border-white/5 flex items-center justify-between">
+          <div class="text-[10px] font-medium text-zinc-500 flex items-center gap-1">
+            <i class="fa-solid fa-file-lines"></i>
+            <span class="font-mono">.docx</span>
+          </div>
+          <div class="prompt-button inline-flex items-center gap-x-1.5 text-xs font-semibold px-3 py-1 rounded-2xl bg-white/5 group-hover:bg-white/10 text-white/70 group-hover:text-white transition-colors">
+            VIEW PROMPT <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </div>
+        </div>`;
+      div.addEventListener('click', () => openPrompt(meta.id));
+      return div;
+    }
+
+    function renderButtons() {
+      const ig = document.getElementById('india-grid');
+      const ug = document.getElementById('usa-grid');
+      ig.innerHTML = ''; ug.innerHTML = '';
+      PROMPT_META.forEach(m => {
+        const c = createCard(m);
+        (m.region === 'India' ? ig : ug).appendChild(c);
+      });
+    }
+
+    function openPrompt(id) {
+      currentPromptId = id;
+      const meta = PROMPT_META.find(m => m.id === id);
+      const original = PROMPTS[id] || '[Prompt not found]';
+      const dateLine = getCurrentDateLine(meta.region);
+      const displayText = dateLine + '\n\n' + original;
+
+      const hdr = document.getElementById('modal-header');
+      const isInd = meta.region === 'India';
+      hdr.innerHTML = `
+        <div class="flex items-center gap-x-3">
+          <div class="text-4xl">${meta.emoji}</div>
+          <div>
+            <div class="flex items-center gap-x-2">
+              <span class="font-semibold text-xl tracking-tight">${meta.title}</span>
+              <span class="text-xs px-2 py-0.5 rounded-full ${isInd ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}">${meta.region}</span>
+            </div>
+            <div class="text-xs text-zinc-400">${meta.subtitle}</div>
+          </div>
+        </div>`;
+      document.getElementById('modal-prompt-text').textContent = displayText;
+      document.getElementById('modal-char-count').textContent = displayText.length.toLocaleString() + ' characters (incl. date)';
+      const md = document.getElementById('modal');
+      md.classList.remove('hidden');
+      md.classList.add('flex');
+    }
+
+    function closeModal() {
+      const md = document.getElementById('modal');
+      md.classList.remove('flex');
+      md.classList.add('hidden');
+      currentPromptId = null;
+    }
+
+    function copyCurrentPrompt() {
+      if (!currentPromptId) return;
+      const meta = PROMPT_META.find(m => m.id === currentPromptId);
+      const original = PROMPTS[currentPromptId] || '';
+      const dateLine = getCurrentDateLine(meta.region);
+      const finalPrompt = dateLine + '\n\n' + original;
+      copyToClipboard(finalPrompt, 'Prompt + current date (' + (meta.region === 'India' ? 'IST' : 'CST') + ') copied!');
+    }
+
+    function copySourcePath() {
+      if (!currentPromptId) return;
+      const m = PROMPT_META.find(x => x.id === currentPromptId);
+      const p = m.file;   // generator now provides ../Analysis/... prefix
+      copyToClipboard(p, 'Relative path copied (use from PromptPortal parent)');
+    }
+
+    async function copyToClipboard(text, msg) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(msg || 'Copied!');
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast(msg || 'Copied!');
+      }
+    }
+
+    function showToast(msg) {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast flex items-center gap-x-2 px-4 py-3 bg-zinc-800 border border-zinc-700 text-sm rounded-2xl shadow-xl max-w-xs';
+      t.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i><span class="font-medium">${msg}</span>`;
+      c.appendChild(t);
+      setTimeout(() => { t.style.transition='all .2s'; t.style.opacity='0'; setTimeout(() => t.parentNode && t.parentNode.removeChild(t), 160); }, 2100);
+    }
+
+    function copyAllPaths() {
+      const txt = PROMPT_META.map(m => m.file).join('\n');   // paths already include ../Analysis prefix
+      copyToClipboard(txt, 'All 8 relative paths copied (../Analysis)');
+    }
+
+    function showHelp() {
+      const msg = `How to use this portal:
+
+1. Click any of the 8 cards (India or USA) to open its prompt.
+2. The prompt ALWAYS includes today's date in the correct timezone:
+   - India prompts → IST (Asia/Kolkata)
+   - USA prompts → CST (America/Chicago)
+3. Click "Copy Prompt to Clipboard" — the copied text will start with the current date line.
+4. Paste directly into your LLM (Grok, Claude, GPT, etc). The LLM will know the exact "today".
+
+Location flexibility:
+- The portal loads prompts from the sibling ../Analysis folder.
+- You can move or rename the entire "Analysis" folder frequently.
+- Just keep the PromptPortal folder as a sibling and re-run the generator.
+
+Refresh after edits:
+- Update the .docx files inside Analysis/India or Analysis/USA.
+- Run generate-prompt-portal.ps1 from inside the PromptPortal folder.
+- Re-open (or hard-refresh) index.html.
+
+Tip: Pin index.html to your taskbar or browser bookmarks for one-click access.`;
+
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px';
+      wrap.onclick = () => wrap.remove();
+      const box = document.createElement('div');
+      box.style.cssText = 'max-width:620px;width:100%;background:#18181b;border:1px solid #3f3f46;border-radius:20px;overflow:hidden';
+      box.innerHTML = '<div style="padding:14px 18px;border-bottom:1px solid #27272a;display:flex;justify-content:space-between;align-items:center"><strong>How to use</strong><button style="font-size:12px;background:#27272a;padding:4px 12px;border-radius:999px">Close</button></div>';
+      const pre = document.createElement('pre');
+      pre.style.cssText = 'margin:12px 18px 18px;padding:16px;background:#111827;border-radius:14px;white-space:pre-wrap;font-size:13px;line-height:1.55;max-height:48vh;overflow:auto';
+      pre.textContent = msg;
+      box.appendChild(pre);
+      wrap.appendChild(box);
+      document.body.appendChild(wrap);
+      box.querySelector('button').onclick = () => wrap.remove();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        const m = document.getElementById('modal');
+        if (!m.classList.contains('hidden')) closeModal();
+      }
+      if (e.key === '?' && document.activeElement === document.body) { e.preventDefault(); showHelp(); }
+    });
+
+    function init() {
+      renderButtons();
+      console.log('%c[PromptsPortal] Ready. window.PromptsPortal available in console.', 'color:#3f3f46');
+      window.PromptsPortal = { open: openPrompt, meta: PROMPT_META, prompts: PROMPTS, refreshHint: 'Re-run the .ps1 generator to update embedded content.' };
+    }
+    init();
+  </script>
+</body>
+</html>

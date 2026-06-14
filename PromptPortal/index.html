@@ -1,0 +1,2663 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analysis Prompts Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
+    body { font-family: 'Inter', system_ui, sans-serif; }
+    .font-display { font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif; font-weight: 600; }
+    .prompt-card { transition: transform .2s cubic-bezier(.4,0,.2,1), box-shadow .2s cubic-bezier(.4,0,.2,1), border-color .2s; }
+    .prompt-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+    .india-card { border-color: #f59e0b; }
+    .india-card:hover { border-color: #d97706; }
+    .usa-card { border-color: #3b82f6; }
+    .usa-card:hover { border-color: #2563eb; }
+    .modal { animation: modalPop .2s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes modalPop {
+      from { opacity:0; transform: scale(.95) translateY(20px); }
+      to { opacity:1; transform: scale(1) translateY(0); }
+    }
+    .prompt-text { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; line-height:1.65; font-size:.95rem; }
+    .section-header { font-size:.75rem; letter-spacing:.05em; text-transform:uppercase; font-weight:600; }
+    .prompt-button { position:relative; overflow:hidden; }
+    .prompt-button::after {
+      content:''; position:absolute; top:-50%; left:-100%; width:50%; height:200%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent); transition:left .6s;
+    }
+    .prompt-button:hover::after { left:250%; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200">
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="flex items-center justify-between mb-10">
+      <div class="flex items-center gap-x-4">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-inner">
+          <i class="fa-solid fa-file-lines text-white text-3xl"></i>
+        </div>
+        <div>
+          <h1 class="text-4xl font-display tracking-tighter">Prompts Portal</h1>
+          <p class="text-zinc-400 text-sm -mt-1">Analysis • India & USA Markets</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-x-3 text-sm">
+        <div class="px-3 py-1.5 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center gap-x-2">
+          <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+          <span class="text-emerald-400 font-medium">8 Prompts Ready</span>
+        </div>
+        <button onclick="copyAllPaths()" class="px-3 py-1.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 flex items-center gap-x-2 text-sm transition-colors">
+          <i class="fa-solid fa-copy"></i>
+          <span>Copy paths</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mb-8 flex items-center gap-2 text-xs text-zinc-500">
+      <i class="fa-solid fa-info-circle"></i>
+      <span>Click any card to view the prompt. <strong>Every prompt includes today's date</strong> (IST for India, CST for USA). The portal loads prompts from the sibling <span class="font-mono">../Analysis</span> folder so you can move the Analysis location freely.</span>
+    </div>
+
+    <!-- INDIA -->
+    <div class="mb-6">
+      <div class="flex items-center gap-x-3 mb-4">
+        <span class="text-3xl">🇮🇳</span>
+        <div>
+          <span class="section-header text-amber-400">INDIA</span>
+          <span class="ml-2 text-zinc-400 text-sm">NSE / BSE focused prompts</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="india-grid"></div>
+    </div>
+
+    <!-- USA -->
+    <div class="mb-12">
+      <div class="flex items-center gap-x-3 mb-4">
+        <span class="text-3xl">🇺🇸</span>
+        <div>
+          <span class="section-header text-blue-400">USA</span>
+          <span class="ml-2 text-zinc-400 text-sm">NYSE / NASDAQ focused prompts</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="usa-grid"></div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-6 border-t border-zinc-800 text-xs text-zinc-500 gap-y-2">
+      <div>
+        Prompts loaded from: <span class="font-mono text-zinc-400">../Analysis</span> (relative to this portal)<br>
+        Generated: 2026-06-14 14:54 • Run <span class="font-mono bg-zinc-900 px-1.5 py-0.5 rounded">generate-prompt-portal.ps1</span> from the PromptPortal folder to refresh.
+      </div>
+      <div class="flex items-center gap-x-4">
+        <button onclick="showHelp()" class="hover:text-zinc-300 transition-colors flex items-center gap-x-1.5">
+          <i class="fa-solid fa-question-circle"></i> <span>How to use</span>
+        </button>
+        <a href=".." class="hover:text-zinc-300 transition-colors flex items-center gap-x-1.5">
+          <i class="fa-solid fa-folder-open"></i> <span>Browse parent</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modal" onclick="if (event.target.id === 'modal') closeModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div onclick="event.stopImmediatePropagation()" class="modal w-full max-w-3xl bg-zinc-900 border border-zinc-700 rounded-3xl shadow-2xl overflow-hidden">
+      <div class="px-6 pt-5 pb-4 border-b border-zinc-800 flex items-start justify-between">
+        <div class="flex items-center gap-x-3" id="modal-header"></div>
+        <button onclick="closeModal()" class="text-zinc-400 hover:text-white p-2 -mr-2 -mt-1 rounded-2xl hover:bg-zinc-800 transition-colors">
+          <i class="fa-solid fa-times text-xl"></i>
+        </button>
+      </div>
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-2 px-1">
+          <div class="uppercase tracking-widest text-[10px] font-semibold text-zinc-500">PROMPT TEXT</div>
+          <div class="text-xs text-zinc-500" id="modal-char-count"></div>
+        </div>
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 max-h-[52vh] overflow-auto">
+          <pre id="modal-prompt-text" class="prompt-text whitespace-pre-wrap text-zinc-300 select-text leading-relaxed"></pre>
+        </div>
+      </div>
+      <div class="px-6 py-4 bg-zinc-950 border-t border-zinc-800 flex flex-wrap gap-3 items-center">
+        <button onclick="copyCurrentPrompt()" class="flex-1 sm:flex-none px-5 py-3 bg-white text-zinc-900 hover:bg-zinc-100 active:bg-white transition-all font-semibold rounded-2xl flex items-center justify-center gap-x-2 text-sm shadow-inner">
+          <i class="fa-solid fa-copy"></i> <span>Copy Prompt to Clipboard</span>
+        </button>
+        <button onclick="copySourcePath()" class="flex-1 sm:flex-none px-4 py-3 bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-800 border border-zinc-700 transition-colors font-medium rounded-2xl flex items-center justify-center gap-x-2 text-sm">
+          <i class="fa-solid fa-file-word"></i> <span>Copy .docx path</span>
+        </button>
+        <button onclick="closeModal()" class="px-5 py-3 text-sm text-zinc-400 hover:text-zinc-200 transition-colors">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="fixed bottom-4 right-4 z-[60] flex flex-col gap-2"></div>
+
+  <script>
+    // DATA (injected by generator - do not edit)
+    const PROMPTS = {
+  'indian_market_news': `Indian Stock Market Analysis Prompt:
+
+"Please identify and analyze Indian stocks (NSE/BSE listed companies) that have recently experienced or are likely to experience positive developments. Specifically, I'm looking for companies with:
+
+High probability of winning major projects or government contracts (infrastructure, defense, railways, smart cities, etc.)
+
+Recent or announced acquisitions/mergers that could drive growth
+
+New strategic investments (FDI, PE investments, joint ventures, or companies making strategic investments)
+
+Strong revenue growth trends, positive quarterly results, or upgraded guidance
+
+Positive sectoral developments (PLI scheme beneficiaries, policy changes, regulatory approvals)
+
+Other significant positive catalysts (new product launches, capacity expansions, debt reduction, dividend announcements)
+
+For each stock recommendation, please provide:
+
+Company Name & NSE/BSE Ticker Symbol
+
+Specific News/Development with brief explanation
+
+Sector (IT, Pharma, Banking, Infrastructure, etc.)
+
+Market Cap Category (Large-cap/Mid-cap/Small-cap)
+
+Potential Impact on stock performance
+
+Recent Price Movement and current trading levels if available
+
+Focus on companies across sectors like:
+
+IT & Technology
+
+Banking & Financial Services
+
+Pharmaceuticals & Healthcare
+
+Infrastructure & Construction
+
+Automobile & Auto Components
+
+Chemicals & Materials
+
+Renewable Energy
+
+Consumer Goods & Retail
+
+Prioritize actionable opportunities with clear growth catalysts in the current Indian market environment."`,
+  'indian_results_week': `Indian Stock Market Earnings Analysis Prompt
+
+Objective
+
+Conduct a comprehensive analysis of Indian stocks (NSE/BSE listed) with quarterly/annual results announcements scheduled for this week (September 16-20, 2025) and provide detailed market intelligence for investment decision-making.
+
+Task Requirements
+
+Phase 1: Identify Target Companies
+
+Search and compile a list of Indian companies announcing results this week 
+
+Primary sources: NSE India, BSE India, Moneycontrol, Economic Times Markets
+
+Secondary sources: Investing.com India, Equitymaster, NiftyTrader, Research360
+
+Focus on Nifty 50, Nifty Next 50, BSE Sensex companies, and significant mid-cap stocks
+
+Include the specific result announcement date and time
+
+Note market cap category (Large-cap, Mid-cap, Small-cap)
+
+Specify if it's Q1/Q2/Q3/Q4 results or annual results
+
+Phase 2: Latest Market News & Corporate Developments
+
+For each identified stock, gather recent news (last 30-60 days) covering:
+
+Business Developments:
+
+Government contract wins (defense, infrastructure, IT, telecom)
+
+Export orders and international expansion
+
+New manufacturing facilities or capacity expansion
+
+Strategic partnerships with domestic/international players
+
+Technology licensing deals or R&D collaborations
+
+Entry into new sectors or product lines
+
+PLI (Production Linked Incentive) scheme benefits
+
+Corporate Actions & Regulatory Updates:
+
+SEBI approvals or compliance updates
+
+RBI policy impacts (especially for banking/NBFC stocks)
+
+Environmental clearances (for industrial/mining companies)
+
+Board meetings and key management changes
+
+Share buyback announcements or bonus issues
+
+Dividend declarations
+
+Credit rating upgrades/downgrades by CRISIL, ICRA, CARE
+
+Sector-Specific News:
+
+Banking: NPA trends, credit growth, CASA ratios
+
+IT: Client wins, visa issues, automation impact
+
+Pharma: USFDA approvals, product launches, regulatory issues
+
+Auto: EV transition, semiconductor supply, rural demand
+
+Real Estate: RERA approvals, project launches, sales trends
+
+Phase 3: Historical Financial Performance
+
+For each stock, compile the last 4 quarters of:
+
+Earnings Per Share (EPS):
+
+Actual EPS vs. analyst estimates (from domestic brokerages)
+
+Year-over-year growth rates
+
+Sequential quarter changes
+
+PAT (Profit After Tax) figures in ₹ crores
+
+Revenue Data:
+
+Total revenue/net sales in ₹ crores
+
+Revenue vs. analyst estimates
+
+Year-over-year growth rates
+
+Key segment/geography-wise performance
+
+Operating margins (EBITDA margins)
+
+Key Financial Ratios:
+
+Return on Equity (ROE)
+
+Return on Capital Employed (ROCE)
+
+Debt-to-Equity ratio trends
+
+Phase 4: Risk Assessment - Identify Setbacks
+
+Document any negative factors from the past 6 months:
+
+Regulatory & Legal Issues:
+
+SEBI/CCI investigations or penalties
+
+Income Tax disputes or GST issues
+
+Environmental violations or NGT orders
+
+Labor disputes or union issues
+
+Patent disputes or intellectual property challenges
+
+Operational Challenges:
+
+Raw material cost inflation
+
+Supply chain disruptions (China dependency, logistics issues)
+
+Competition from Chinese/international players
+
+Capacity utilization concerns
+
+Quality issues or product recalls
+
+Market-Related Concerns:
+
+Analyst downgrades by domestic brokerages (Motilal Oswal, HDFC Securities, etc.)
+
+FII/DII selling pressure
+
+Promoter pledge increases
+
+Credit rating downgrades
+
+Currency hedging losses (for export-oriented companies)
+
+Phase 5: Growth Catalysts - Future Positive Drivers
+
+Identify factors that could boost stock price in the coming quarters:
+
+Policy & Regulatory Tailwinds:
+
+Make in India initiatives
+
+PLI scheme benefits
+
+Infrastructure spending (Gati Shakti, smart cities)
+
+Digital India programs
+
+Green energy transition policies
+
+Banking sector reforms
+
+Sectoral Growth Drivers:
+
+Monsoon impact (for rural-focused companies)
+
+Festival season demand (consumer goods, auto, retail)
+
+Wedding season impact (jewelry, textiles, hotels)
+
+Budget allocations and policy announcements
+
+GST rate reductions or policy simplifications
+
+Company-Specific Catalysts:
+
+Capex plans and brownfield/greenfield expansions
+
+Debt reduction through asset monetization
+
+Margin expansion through automation/digitization
+
+Market share gains in key segments
+
+Export diversification away from traditional markets
+
+ESG initiatives and sustainability focus
+
+Output Format
+
+For each company, present the analysis in this structured format:
+
+[Company Name] ([NSE/BSE Ticker])
+
+Results Date: [Date and Time] Market Cap: ₹[Amount] crores ([Large/Mid/Small]-cap) Sector: [Primary sector] Quarter/Period: [Q1/Q2/Q3/Q4 FY25 or Annual FY24]
+
+Recent Market News & Developments
+
+[List 3-5 most significant recent developments]
+
+[Include government policy impacts if relevant]
+
+Historical Performance (Last 4 Quarters)
+
+EPS History:
+
+Q[X] FY[XX]: ₹[X.XX] (Est: ₹[X.XX]) - [YoY Growth %]
+
+[Continue for 4 quarters]
+
+Revenue History:
+
+Q[X] FY[XX]: ₹[X,XXX] crores (Est: ₹[X,XXX] crores) - [YoY Growth %]
+
+[Continue for 4 quarters]
+
+Key Margins:
+
+EBITDA Margin trend: [Last 4 quarters]
+
+PAT Margin trend: [Last 4 quarters]
+
+Risk Factors & Setbacks
+
+[List key concerns and negative developments]
+
+[Include sector-specific challenges]
+
+Growth Catalysts & Positive Outlook
+
+[List factors that could drive stock price higher]
+
+[Include policy benefits and sectoral tailwinds]
+
+Research Sources for Indian Markets
+
+Primary Sources:
+
+NSE India (nseindia.com)
+
+BSE India (bseindia.com)
+
+Company investor presentations and annual reports
+
+BSE/NSE announcements and disclosures
+
+Financial News & Analysis:
+
+Moneycontrol, Economic Times Markets
+
+Business Standard, Financial Express
+
+BloombergQuint, CNBC-TV18
+
+Equitymaster, Capitaline, Ace Equity
+
+Brokerage Research:
+
+Motilal Oswal, HDFC Securities
+
+ICICI Direct, Kotak Securities
+
+CLSA, Morgan Stanley (for institutional view)
+
+Government & Regulatory:
+
+Ministry websites for sector-specific news
+
+RBI bulletins and circulars
+
+SEBI announcements and investor alerts
+
+Success Criteria
+
+Comprehensive coverage of at least 15-20 major Indian companies with results this week
+
+Include mix of large-cap, mid-cap, and sectoral leaders
+
+Balanced perspective including both domestic and global factors
+
+Currency-specific analysis (₹ terms, not USD)
+
+Policy impact assessment for each sector
+
+Actionable insights for Indian market investors
+
+Up-to-date information reflecting Indian market dynamics
+
+Special Considerations for Indian Markets
+
+Include monsoon/weather impact for relevant sectors
+
+Consider festival season effects on consumer demand
+
+Account for government policy changes and budget impacts
+
+Factor in FII/DII flow patterns
+
+Include rural vs. urban market dynamics
+
+Consider China+1 strategy impacts for relevant sectors`,
+  'indian_stock_analysis': `You are an expert stock analyst with access to web search. Analyze the stock **[STOCK NAME / 
+
+TICKER]*
+
+* listed on **[NSE/
+
+BSE]*
+
+*.
+
+Before starting the analysis, search the web for:
+
+- Latest news about this company (last 30 days)
+
+- Recent quarterly results or earnings announcements
+
+- Any regulatory, management, or sector-level developments
+
+- Analyst upgrades/downgrades or target price changes
+
+- Analyst consensus estimates and future earnings forecasts
+
+- Sector/industry growth outlook for next 2–3 years
+
+- Any management guidance or investor day commentary
+
+- Latest balance sheet data focusing on liabilities and debt structure
+
+- Promoter pledging, FII/DII holding changes (last 2 quarters)
+
+- Any bulk/block deals or insider buying/selling activity
+
+- Peer comparison data for top 3 competitors
+
+Then provide a comprehensive beginner-friendly report:
+
+---
+
+## 1. Company Overview
+
+- What the company does, its sector, and key business segments
+
+- Market cap category (
+
+largecap
+
+ / midcap / 
+
+smallcap
+
+)
+
+- Promoter holding % and any recent changes
+
+- 52-week high and low — where is the stock currently in its range?
+
+---
+
+## 2. 🗞️ Latest News & Developments
+
+- Summarize 4–6 recent news items (with approximate dates)
+
+- Classify each as: 🟢 Positive | 🔴 Negative | 🟡 Neutral
+
+- **News Sentiment 
+
+Score:*
+
+* Overall Positive / Negative / Mixed
+
+- **Key upcoming 
+
+events:*
+
+* earnings date, AGM, product launches, regulatory decisions
+
+---
+
+## 3. 📊 Fundamental Analysis
+
+**Financial Health (last 3 years trend
+
+):*
+
+*
+
+- Revenue growth
+
+- Net Profit & Net Profit Margin
+
+- EPS (Earnings Per Share) trend
+
+- Return on Equity (ROE) and Return on Capital Employed (ROCE)
+
+- Return on Invested Capital (ROIC)
+
+- Free Cash Flow trend
+
+**Earnings Quality 
+
+Check:*
+
+*
+
+- Is profit driven by core operations or one-time items?
+
+- Operating Cash Flow (OCF) vs Net Profit — are they aligned?
+
+- Receivables growth vs revenue growth — any inflation of earnings?
+
+- Inventory buildup — any sign of slowing demand?
+
+- Cash conversion cycle — how efficiently is working capital managed?
+
+**
+
+Valuation:*
+
+*
+
+- Current P/E ratio vs industry average
+
+- P/B ratio
+
+- FCF yield (Free Cash Flow / Market Cap)
+
+- PEG Ratio — is growth already priced in?
+
+- Is the stock overvalued, 
+
+fairly valued
+
+, or undervalued? Explain briefly.
+
+**Strengths & Red 
+
+Flags:*
+
+*
+
+- List 3–4 fundamental strengths
+
+- List 2–3 red flags or risks to watch
+
+---
+
+## 4. ⚖️ Liabilities & Debt Analysis
+
+**Debt 
+
+Structure:*
+
+*
+
+- Total Debt (short-term vs long-term breakdown)
+
+- Debt-to-Equity ratio — trend over last 3 years
+
+- Debt-to-EBITDA ratio — can the company comfortably service its debt?
+
+- Interest Coverage Ratio — how many times can earnings cover interest payments?
+
+**Key Liabilities 
+
+Breakdown:*
+
+*
+
+- Total current liabilities vs total long-term liabilities
+
+- Contingent liabilities (off-balance-sheet risks, pending lawsuits, guarantees)
+
+- Deferred tax liabilities
+
+- Lease obligations (if significant)
+
+- Any recent increase in liabilities — and why
+
+**Liability Health 
+
+Assessment:*
+
+*
+
+- Is the debt level sustainable given the business's cash flow?
+
+- Any upcoming large debt repayments or refinancing risk?
+
+- Credit rating (if available) and any recent changes
+
+- Compare debt levels to industry peers
+
+- Classify overall liability risk as: 🟢 Low | 🟡 Moderate | 🔴 High
+
+---
+
+## 5. 🏭 Competitive Moat & Management Quality
+
+**Competitive 
+
+Moat:*
+
+*
+
+- Does the company have a durable competitive advantage?
+
+- Moat type: Brand / Cost Advantage / Network Effect / Switching Costs / Patents / None
+
+- Market share 
+
+trend —
+
+ gaining or losing ground to competitors?
+
+- Pricing power — can it raise prices without losing customers?
+
+- Rate moat strength as: 🟢 Strong | 🟡 Moderate | 🔴 Weak / None
+
+**Management 
+
+Quality:*
+
+*
+
+- Promoter background and track record
+
+- History of capital raising — frequent dilution hurts shareholders
+
+- Related party transactions — watch for fund diversion
+
+- Auditor changes or qualifications — serious red flag if auditor resigned
+
+- Corporate governance concerns (if any)
+
+- Rate management quality as: 🟢 High | 🟡 Average | 🔴 Concerns Exist
+
+---
+
+## 6. 💰 Capital Allocation & Cash Flow Quality
+
+- Dividend history & payout ratio — is management rewarding shareholders?
+
+- Buyback history — signals management confidence
+
+- CAPEX trend — is the company investing for future growth?
+
+- FCF consistency — is free cash flow growing year over year?
+
+- OCF vs Net Profit consistency over last 3 years
+
+- Rate capital allocation as: 🟢 Excellent | 🟡 Average | 🔴 Poor
+
+---
+
+## 7. 🏦 Institutional & Smart Money Activity
+
+- Promoter holding % trend and 
+
+pledging % —
+
+ high pledging is a red flag
+
+- FII holding change (last 2 
+
+quarters) —
+
+ buying or selling?
+
+- DII holding change (last 2 
+
+quarters) —
+
+ buying or selling?
+
+- Any recent bulk or block deals — large trades signal smart money moves
+
+- Insider buying or selling activity
+
+- Summarize smart money sentiment as: 🟢 Accumulating | 🟡 Neutral | 🔴 Exiting
+
+---
+
+## 8. 🔄 Peer Comparison
+
+Compare this stock vs top 3 competitors on:
+
+| Metric | This Stock | Peer 1 | Peer 2 | Peer 3 |
+
+|---|---|---|---|---|
+
+| P/E Ratio | | | | |
+
+| P/B Ratio | | | | |
+
+| ROE % | | | | |
+
+| ROCE % | | | | |
+
+| Debt/Equity | | | | |
+
+| Revenue Growth (3yr) | | | | |
+
+| Net Profit Margin | | | | |
+
+| FCF Yield | | | | |
+
+- Is this the best stock in its sector to own right now?
+
+- Relative strength vs Nifty 50 — outperforming or underperforming?
+
+- Sector rotation — is this sector currently in favor or out of favor?
+
+- Rank among peers
+
+: 🥇 Leader | 🥈
+
+ Mid-pack | 🥉 Laggard
+
+---
+
+## 9. 📈 Technical Analysis
+
+**Trend & Price 
+
+Action:*
+
+*
+
+- Current trend (uptrend / downtrend / sideways)
+
+- Key support and resistance levels
+
+- 50-day and 200-day Moving Average position (is price above or below?)
+
+- Any notable chart patterns (Head & Shoulders, Cup & Handle, Double Top/Bottom etc.)
+
+- Maximum historical drawdown — worst fall from peak ever
+
+- Average True Range (
+
+ATR) —
+
+ daily volatility measure
+
+**Momentum 
+
+Indicators:*
+
+*
+
+- MACD signal (bullish / bearish / neutral crossover)
+
+- Volume trend (increasing / decreasing on rallies vs declines)
+
+- Beta — how volatile is this stock vs the broader market?
+
+**🔍 RSI 
+
+Analysis:*
+
+*
+
+*Current RSI 
+
+Reading:*
+
+- RSI value on daily chart
+
+- RSI value on weekly chart
+
+- Interpretation: Overbought (>70) / Neutral (30–70) / Oversold (<30)
+
+*RSI Divergence 
+
+Detection:*
+
+Carefully examine both daily and weekly charts for the following:
+
+**Bullish Divergence (Potential Buy Signal
+
+):*
+
+*
+
+- 🟢 Regular
+
+ Bullish: Price making lower lows BUT RSI making higher lows
+
+ → Weakening bearish momentum, possible reversal upward
+
+- 🟢 Hidden
+
+ Bullish: Price making higher lows BUT RSI making lower lows
+
+ → Uptrend continuation, good pullback entry
+
+**Bearish Divergence (Potential Sell Signal
+
+):*
+
+*
+
+- 🔴 Regular
+
+ Bearish: Price making higher highs BUT RSI making lower highs
+
+ → Weakening bullish momentum, possible reversal downward
+
+- 🔴 Hidden
+
+ Bearish: Price making lower highs BUT RSI making higher highs
+
+ → Downtrend continuation, rally may be a trap
+
+*Divergence Summary 
+
+Table:*
+
+| Timeframe | Divergence Type | Price Action | RSI Action | Signal | Strength |
+
+|---|---|---|---|---|---|
+
+| Daily | | | | 🟢/🔴/None | Weak/Moderate/Strong |
+
+| Weekly | | | | 🟢/🔴/None | Weak/Moderate/Strong |
+
+- Is any divergence currently active or recently confirmed?
+
+- Has divergence been confirmed by a price breakout or breakdown?
+
+- Classify RSI signal as: 🟢 Bullish | 🔴 Bearish | 🟡 No Divergence Detected
+
+---
+
+## 10. 🌍 Macro & Sector Sensitivity
+
+- Sector rotation — is the sector currently in favor or out of favor?
+
+- Currency sensitivity — for exporters/importers, INR movement impact
+
+- Commodity exposure — input cost risks (oil, metals, 
+
+agri
+
+)
+
+- Interest rate sensitivity — especially for NBFCs, real estate, capital-heavy businesses
+
+- Government policy or regulatory tailwinds/headwinds
+
+- Global demand factors (if applicable)
+
+---
+
+## 11. News vs. Chart Correlation
+
+- Are recent news events reflected in the price action?
+
+- Any price gaps or unusual volume spikes tied to news?
+
+- Is the market reacting rationally or overreacting to recent news?
+
+- Does the RSI divergence align with or contradict the news sentiment?
+
+---
+
+## 12. 🔭 Future Projections
+
+**Earnings & Revenue 
+
+Estimates:*
+
+*
+
+- Analyst consensus EPS estimates for next 1–2 years
+
+- Revenue growth forecast (next 2–3 years)
+
+- Expected margin expansion or compression — and why
+
+**Business Growth 
+
+Drivers:*
+
+*
+
+- 3–4 key catalysts that could drive growth
+
+- New products, expansions, contracts, or market opportunities
+
+- Management guidance summary (if available)
+
+**Scenario 
+
+Analysis:*
+
+*
+
+| Scenario | Probability | Key Assumption | Expected Price Range (1 year) |
+
+|---|---|---|---|
+
+| 🐂 Bull Case | % | | ₹ |
+
+| 🐄 Base Case | % | | ₹ |
+
+| 🐻 Bear Case | % | | ₹ |
+
+**Fair Value 
+
+Estimate:*
+
+*
+
+- Estimated intrinsic value range based on forward earnings
+
+- Upside / downside % from current price
+
+---
+
+## 13. 🎯 Buy / Sell Recommendation
+
+**Overall 
+
+Recommendation:*
+
+*
+
+State clearly: 🟢 STRONG BUY | 🟦 BUY | 🟡 HOLD | 🟠 REDUCE | 🔴 SELL
+
+**Recommendation 
+
+Rationale:*
+
+*
+
+4–5 bullet points covering:
+
+- Valuation vs peers and history
+
+- Fundamental quality (earnings, ROE, debt)
+
+- Liability & debt risk
+
+- Technical setup + RSI divergence signal
+
+- News sentiment & upcoming catalysts
+
+- Smart money activity (FII/DII/Promoter)
+
+- Future growth potential
+
+**For Existing 
+
+Holders:*
+
+*
+
+- Hold, add more, or book partial profits?
+
+- Exit price: ₹___
+
+- Stop loss: ₹___
+
+**For New 
+
+Investors:*
+
+*
+
+- Good time to enter?
+
+- Entry zone: ₹___ to ₹___
+
+- 
+
+Position sizing
+
+ 
+
+suggestion
+
+- Recommended investment horizon
+
+**Risk-Reward 
+
+Summary:*
+
+*
+
+| | Level | Price |
+
+|---|---|---|
+
+| Current Price | | ₹ |
+
+| Target Price (Base) | | ₹ |
+
+| Target Price (Bull) | | ₹ |
+
+| Stop Loss | | ₹ |
+
+| Upside Potential | % | |
+
+| Downside Risk | % | |
+
+| Risk-Reward Ratio | 
+
+| :
+
+ 1 |
+
+---
+
+## 14. 📋 Verdict Scorecard
+
+| Parameter | Rating (1–5) | Comment |
+
+|---|---|---|
+
+| Business Quality | | |
+
+| Financial Health | | |
+
+| Earnings Quality | | |
+
+| Liability & Debt Risk | | |
+
+| Competitive Moat | | |
+
+| Management Quality | | |
+
+| Capital Allocation | | |
+
+| Institutional Activity | | |
+
+| Peer Standing | | |
+
+| Valuation | | |
+
+| Technical Setup | | |
+
+| RSI Divergence Signal | | |
+
+| News Sentiment | | |
+
+| Macro Sensitivity | | |
+
+| Future Growth Potential | | |
+
+| **Overall** | | |
+
+---
+
+## 15. 🗒️ PLAIN ENGLISH SUMMARY (NEW)
+
+Write this section as if explaining to a friend who knows nothing about stock markets.
+
+Use simple language, no jargon, no technical terms. Cover the following in short paragraphs:
+
+**What does this company 
+
+do?*
+
+*
+
+[2–3 lines on the business in everyday language]
+
+**Is the company financially 
+
+healthy?*
+
+*
+
+[Is it making money? Is it drowning in debt? Is cash flow strong?]
+
+**What are the biggest 
+
+risks?*
+
+*
+
+[Top 2–3 things that could go wrong — in plain terms]
+
+**What are the biggest 
+
+opportunities?*
+
+*
+
+[Top 2–3 reasons this stock could do well — in plain terms]
+
+**What is 
+
+the smart
+
+ money 
+
+doing?*
+
+*
+
+[Are big investors (FIIs, DIIs, promoters) buying or running away?]
+
+**Is the stock cheap or expensive right 
+
+now?*
+
+*
+
+[Simple valuation take — bargain, fair price, or overpriced?]
+
+**What do the charts 
+
+say?*
+
+*
+
+[Is the price going up, down, or sideways? Any warning signs or green flags?]
+
+**What could happen in the next 1 
+
+year?*
+
+*
+
+[Best case, worst case, and most likely outcome — in plain English]
+
+**So... should I buy, hold, or 
+
+sell?*
+
+*
+
+[Final straight-talking recommendation with simple reasoning]
+
+**One line 
+
+verdict:*
+
+*
+
+"This stock 
+
+is __
+
+________ because __________."
+
+---`,
+  'indian_stock_predictions': `You are an Indian stock market analyst specializing in NSE/BSE listed companies.
+
+Task 1 — Direct Catalyst Stocks (MOU / Contract / Bid / JV / Speculation):
+
+Search today's BSE/NSE corporate announcements, exchange filings (Regulation 30), Indian financial news, and market speculation/rumour channels from the last 24–48 hours. Find companies that have announced or are being speculated about for:
+
+* MOU or agreement signings (domestic or international)
+
+* Project bids won or L1 status declared (govt tenders, defence, infra, railways, power)
+
+* New orders received (specify value in ₹ crore)
+
+* Joint ventures or strategic partnerships formed
+
+* Capacity expansion, new plant, or greenfield announcements
+
+* Export order wins or entry into new international markets
+
+* Speculative news — merger/acquisition rumours, block deal speculation, stake sale buzz, delisting talk, promoter buying/selling rumours, government policy beneficiary speculation, or any market whispers with credible traction
+
+For each stock found, provide:
+
+1. Company name + NSE/BSE ticker
+
+2. Type of news (MOU / order win / JV / L1 bid / export / capex / speculation)
+
+3. Deal/order value in ₹ crore (if disclosed)
+
+4. Counterparty (govt ministry / private company / foreign entity / unknown if speculation)
+
+5. Sector (defence / railways / power / pharma / infra / IT / other)
+
+6. News source type: Official Filing / News Report / Market Rumour / Social Media Buzz
+
+7. Credibility of speculative news: High / Medium / Low — with 1-line reasoning
+
+8. Expected stock impact: High / Medium / Low — with 1-line reasoning
+
+9. Is it F&O eligible? (Yes / No)
+
+Task 2 — Ecosystem Effect (Secondary Beneficiary Stocks):
+
+For any major trigger event in India or globally this week — including confirmed deals AND credible speculation — identify which NSE/BSE listed stocks will rally as secondary beneficiaries even without a direct deal.
+
+Look for:
+
+* Sector peers of a company that just won a large order or is subject to a major rumour
+
+* Supply chain / component suppliers of the trigger company
+
+* Indian companies in the same business as a global trigger (policy shifts, geopolitical events, global sector re-ratings)
+
+* Competitors that get re-rated when a peer gets government validation or M&A buzz
+
+* Theme plays emerging from speculation — if a policy rumour or sector consolidation story is building, which stocks benefit?
+
+For each secondary stock, provide:
+
+1. Company name + NSE/BSE ticker
+
+2. Trigger event that creates the halo effect (confirmed or speculative)
+
+3. Why this stock benefits (supply chain / peer re-rate / same sector / govt pipeline / theme play)
+
+4. Impact: High / Medium / Low
+
+5. Timing: Immediate (0–3 days) or Delayed (1–4 weeks)
+
+6. Already priced in? Yes / Partially / Not yet
+
+7. Is it F&O eligible? (Yes / No)
+
+Filters to apply across both tasks:
+
+* Only NSE or BSE listed Indian stocks
+
+* Prefer stocks where news is from last 24–48 hours
+
+* For speculation: clearly label as RUMOUR / UNCONFIRMED and note if the company has denied it
+
+* Flag if the company has a strong order book history (repeat winner)
+
+* Add a "Watchlist Priority" tag: URGENT (act within 1–2 days) / MONITOR (watch over next week) / RESEARCH (needs more confirmation)
+
+End with a ranked shortlist of top 5 stocks to watch today, sorted by conviction level — covering both confirmed catalysts and high-credibility speculation plays.`,
+  'usa_market_news': `Stock Analysis Prompt:
+
+"Please identify and analyze stocks that have recently experienced or are likely to experience positive developments. Specifically, I'm looking for companies with:
+
+High probability of winning major projects or contracts
+
+Recent or announced acquisitions that could drive growth
+
+New strategic investments (either investing in others or receiving investments)
+
+Strong revenue growth trends or positive revenue guidance
+
+Any other significant positive news (partnerships, product launches, regulatory approvals, etc.)
+
+For each stock recommendation, please provide:
+
+Stock Name & Ticker Symbol
+
+Specific News/Development (with brief explanation)
+
+Potential Impact on stock performance
+
+Recent Price Movement context if relevant
+
+Focus on actionable opportunities with clear catalysts for potential growth. Include both large-cap and mid-cap opportunities across different sectors."`,
+  'usa_results_week': `Conduct a comprehensive analysis of stocks with earnings announcements scheduled for this week and provide detailed market intelligence for investment decision-making.
+
+Task Requirements
+
+Phase 1: Identify Target Companies
+
+Search and compile a list of companies announcing earnings this week 
+
+Use multiple sources: Yahoo Finance, Nasdaq, Seeking Alpha, TradingView, Earnings Whispers
+
+Focus on major public companies (preferably S&P 500, NASDAQ 100, or significant market cap)
+
+Include the specific earnings announcement date and time
+
+Note whether it's before market open (BMO) or after market close (AMC)
+
+Phase 2: Latest Market News & Developments
+
+For each identified stock, gather recent news (last 30-60 days) covering:
+
+Business Developments:
+
+New project wins or contract acquisitions
+
+Strategic partnerships and collaborations
+
+Mergers, acquisitions, or joint ventures
+
+Product launches or service expansions
+
+Regulatory approvals or certifications
+
+Geographic expansion or new market entry
+
+Corporate Actions:
+
+Leadership changes (CEO, CFO, key executives)
+
+Share buyback programs or dividend announcements
+
+Stock splits or spin-offs
+
+Credit rating changes
+
+Phase 3: Historical Financial Performance
+
+For each stock, compile the last 4 quarters of:
+
+Earnings Per Share (EPS):
+
+Actual EPS vs. analyst estimates
+
+Year-over-year growth rates
+
+Sequential quarter changes
+
+Revenue Data:
+
+Total revenue figures
+
+Revenue vs. analyst estimates
+
+Year-over-year growth rates
+
+Key segment performance (if available)
+
+Phase 4: Risk Assessment - Identify Setbacks
+
+Document any negative factors from the past 6 months:
+
+Legal issues, lawsuits, or regulatory challenges
+
+Product recalls or safety concerns
+
+Competitive pressures or market share losses
+
+Supply chain disruptions
+
+Management scandals or controversies
+
+Analyst downgrades or negative research reports
+
+Customer losses or contract cancellations
+
+Cybersecurity breaches or data incidents
+
+Phase 5: Growth Catalysts - Future Positive Drivers
+
+Identify factors that could boost stock price in the coming quarters:
+
+Fundamental Catalysts:
+
+Expanding profit margins or cost reduction initiatives
+
+New product cycles or innovation pipeline
+
+Market expansion opportunities
+
+Improving competitive positioning
+
+Strong guidance or forward-looking statements
+
+Industry/Market Tailwinds:
+
+Favorable regulatory environment
+
+Industry growth trends
+
+Economic factors benefiting the sector
+
+Technology adoption trends
+
+Financial Catalysts:
+
+Debt reduction or improved balance sheet
+
+Cash flow improvement
+
+Potential dividend increases
+
+Share buyback programs
+
+Output Format
+
+For each company, present the analysis in this structured format:
+
+[Company Name] ([Ticker Symbol])
+
+Earnings Date: [Date and Time] Market Cap: [Current market capitalization]
+
+Recent Market News
+
+[List 3-5 most significant recent developments]
+
+Historical Performance (Last 4 Quarters)
+
+EPS History:
+
+Q[X] [Year]: $X.XX (Est: $X.XX) - [YoY Growth %]
+
+[Continue for 4 quarters]
+
+Revenue History:
+
+Q[X] [Year]: $X.XX billion (Est: $X.XX billion) - [YoY Growth %]
+
+[Continue for 4 quarters]
+
+Risk Factors & Setbacks
+
+[List key concerns and negative developments]
+
+Growth Catalysts & Positive Outlook
+
+[List factors that could drive stock price higher]
+
+Research Sources to Utilize
+
+Company investor relations websites
+
+SEC filings (10-Q, 10-K, 8-K)
+
+Financial news platforms (Bloomberg, Reuters, MarketWatch)
+
+Analyst research reports
+
+Industry publications
+
+Earnings call transcripts
+
+Social media sentiment (Twitter, LinkedIn)
+
+Success Criteria
+
+Comprehensive coverage of at least 10-15 major companies with earnings this week
+
+Balanced perspective including both risks and opportunities
+
+Data-driven analysis with specific figures and dates
+
+Actionable insights for investment decision-making
+
+Up-to-date information as of the analysis date`,
+  'usa_stock_analysis': `You are an expert stock analyst with access to web search. 
+
+Analyze
+
+ the stock **[STOCK NAME / 
+
+TICKER]*
+
+* listed on **[NYSE/
+
+NASDAQ]*
+
+*.
+
+Before starting the analysis, search the web for:
+
+- Latest news about this company (last 30 days)
+
+- Recent quarterly earnings results (10-Q) and annual report (10-K)
+
+- Any regulatory, management, or sector-level developments
+
+- Analyst upgrades/downgrades and Wall Street price target changes
+
+- Analyst consensus estimates and forward earnings forecasts (EPS, Revenue)
+
+- Sector/industry growth outlook for next 2–3 years
+
+- Any management guidance or investor day commentary
+
+- Latest balance sheet data focusing on liabilities and debt structure
+
+- Institutional ownership changes (13F filings), insider buying/selling (Form 4)
+
+- Any recent share buyback announcements or dividend changes
+
+- Peer comparison data for top 3 competitors in the same sector
+
+Then provide a comprehensive beginner-friendly report:
+
+---
+
+## 1. Company Overview
+
+- What the company does, its sector, and key business segments
+
+- Market cap category (Mega / Large / Mid / Small cap)
+
+- S&P 500 / Nasdaq 100 / Russell 2000 — which index does it belong to?
+
+- Exchange listed (NYSE / NASDAQ)
+
+- 52-week high and low — where is the stock currently in its range?
+
+- Headquarters, founded year, CEO name
+
+---
+
+## 2. 🗞️ Latest News & Developments
+
+- Summarize 4–6 recent news items (with approximate dates)
+
+- Classify each as: 🟢 Positive | 🔴 Negative | 🟡 Neutral
+
+- **News Sentiment 
+
+Score:*
+
+* Overall Positive / Negative / Mixed
+
+- **Key upcoming 
+
+events:*
+
+* earnings date, Fed meetings, product launches,
+
+ FDA approvals (if pharma), regulatory decisions, investor days
+
+---
+
+## 3. 📊 Fundamental Analysis
+
+**Financial Health (last 3 years trend
+
+):*
+
+*
+
+- Revenue growth (YoY and QoQ)
+
+- Net Profit & Net Profit Margin
+
+- EPS (Earnings Per Share) — GAAP vs 
+
+Non-GAAP
+
+ (note difference)
+
+- Gross Margin and Operating Margin trend
+
+- Return on Equity (ROE) and Return on Capital Employed (ROCE)
+
+- Return on Invested Capital (ROIC)
+
+- Free Cash Flow trend
+
+**Earnings Quality 
+
+Check:*
+
+*
+
+- Is profit driven by core operations or one-time items?
+
+- GAAP vs 
+
+Non-GAAP
+
+ gap — large differences are a warning sign
+
+- Operating Cash Flow (OCF) vs Net Profit — are they aligned?
+
+- Receivables growth vs revenue growth — any inflation of earnings?
+
+- Inventory buildup — any sign of slowing demand?
+
+- Cash conversion cycle — how efficiently is working capital managed?
+
+- Revenue recognition policies — any aggressive accounting concerns?
+
+**
+
+Valuation:*
+
+*
+
+- Current P/E ratio (GAAP and Forward) vs sector average
+
+- P/S ratio (Price-to-Sales) — especially for growth/tech stocks
+
+- P/B ratio (Price-to-Book)
+
+- EV/EBITDA — enterprise 
+
+value based
+
+ valuation
+
+- FCF yield (Free Cash Flow / Market Cap)
+
+- PEG Ratio — is growth already priced in?
+
+- Is the stock overvalued, 
+
+fairly valued
+
+, or undervalued? Explain briefly.
+
+**Strengths & Red 
+
+Flags:*
+
+*
+
+- List 3–4 fundamental strengths
+
+- List 2–3 red flags or risks to watch
+
+---
+
+## 4. ⚖️ Liabilities & Debt Analysis
+
+**Debt 
+
+Structure:*
+
+*
+
+- Total Debt (short-term vs long-term breakdown)
+
+- Debt-to-Equity ratio — trend over last 3 years
+
+- Debt-to-EBITDA ratio — can the company comfortably service its debt?
+
+- Interest Coverage Ratio — how many times can earnings cover interest?
+
+- Net Debt vs Net Cash position — does it have more cash than debt?
+
+**Key Liabilities 
+
+Breakdown:*
+
+*
+
+- Total current liabilities vs total long-term liabilities
+
+- Contingent liabilities (off-balance-sheet risks, lawsuits, guarantees)
+
+- Deferred revenue (especially for SaaS/subscription companies)
+
+- Deferred tax liabilities
+
+- Lease obligations (operating vs finance leases)
+
+- Pension obligations (if applicable)
+
+- Any recent increase in liabilities — and why
+
+**Liability Health 
+
+Assessment:*
+
+*
+
+- Is the debt level sustainable given cash flow?
+
+- Any upcoming large debt maturities or refinancing risk?
+
+- Credit rating from Moody's / S&P / Fitch — and any recent changes
+
+- Compare debt levels to industry peers
+
+- Classify overall liability risk as: 🟢 Low | 🟡 Moderate | 🔴 High
+
+---
+
+## 5. 🏭 Competitive Moat & Management Quality
+
+**Competitive 
+
+Moat:*
+
+*
+
+- Does the company have a durable competitive advantage?
+
+- Moat type: Brand / Cost Advantage / Network Effect /
+
+ Switching Costs / Patents / Regulatory License / None
+
+- Market share trend — gaining or losing ground?
+
+- Pricing power — can it raise prices without losing customers?
+
+- Rate moat strength as: 🟢 Strong | 🟡 Moderate | 🔴 Weak / None
+
+**Management 
+
+Quality:*
+
+*
+
+- CEO/CFO background, tenure, and track record
+
+- History of capital raising or dilution — frequent dilution hurts shareholders
+
+- Executive compensation vs company performance alignment
+
+- Related party transactions — watch for conflicts of interest
+
+- Auditor (Big 4 vs smaller firm) and any recent auditor changes
+
+- SEC investigations or restatements — serious red flags
+
+- Corporate governance score (if available)
+
+- Rate management quality as: 🟢 High | 🟡 Average | 🔴 Concerns Exist
+
+---
+
+## 6. 💰 Capital Allocation & Cash Flow Quality
+
+- Dividend history, current yield, and payout ratio
+
+- Dividend growth rate (Dividend Aristocrat / King status if applicable)
+
+- Share buyback history and current buyback program size
+
+- CAPEX trend — maintenance vs growth capex
+
+- R&D spending trend (especially for tech/pharma)
+
+- FCF consistency — is free cash flow growing year over year?
+
+- OCF vs Net Profit consistency over last 3 years
+
+- Rate capital allocation as: 🟢 Excellent | 🟡 Average | 🔴 Poor
+
+---
+
+## 7. 🏦 Institutional & Smart Money Activity
+
+- Total institutional ownership % (from latest 13F filings)
+
+- Top 5 institutional holders and recent changes
+
+- Recent 13F activity — are major funds adding or reducing?
+
+- Insider buying or selling (Form 4 filings — last 90 days)
+
+- Short interest % of float — high short interest signals bearish bets
+
+- Short interest ratio (Days to Cover) — above 5 days is notable
+
+- Any recent activist investor involvement
+
+- Summarize smart money sentiment as: 🟢 Accumulating | 🟡 Neutral | 🔴 Exiting
+
+---
+
+## 8. 🔄 Peer Comparison
+
+Compare this stock vs top 3 competitors on:
+
+| Metric | This Stock | Peer 1 | Peer 2 | Peer 3 |
+
+|---|---|---|---|---|
+
+| P/E Ratio (Forward) | | | | |
+
+| P/S Ratio | | | | |
+
+| EV/EBITDA | | | | |
+
+| ROE % | | | | |
+
+| ROIC % | | | | |
+
+| Debt/Equity | | | | |
+
+| Revenue Growth (3yr) | | | | |
+
+| Net Profit Margin | | | | |
+
+| FCF Yield | | | | |
+
+| Dividend Yield | | | | |
+
+- Is this the best stock in its sector to own right now?
+
+- Relative strength vs S&P 500 — outperforming or underperforming?
+
+- Sector rotation — is this sector currently in 
+
+favor
+
+ or out of 
+
+favor
+
+?
+
+- Rank among peers: 🥇 Leader | 🥈 Mid-pack | 🥉 Laggard
+
+---
+
+## 9. 📈 Technical Analysis
+
+**Trend & Price 
+
+Action:*
+
+*
+
+- Current trend (uptrend / downtrend / sideways)
+
+- Key support and resistance levels
+
+- 50-day and 200-day Moving Average position (above or below?)
+
+- Golden Cross or Death Cross — recently occurred or approaching?
+
+- Any notable chart patterns (Head & Shoulders, Cup & Handle,
+
+ Double Top/Bottom, Flag, Wedge etc.)
+
+- Maximum historical drawdown — worst fall from peak ever
+
+- Average True Range (ATR) — daily volatility measure
+
+**Momentum 
+
+Indicators:*
+
+*
+
+- MACD signal (bullish / bearish / neutral crossover)
+
+- Volume trend (increasing / decreasing on rallies vs declines)
+
+- Beta vs S&P 500 — how volatile is this stock vs the market?
+
+- Bollinger Bands — is price near upper or lower band?
+
+**🔍 RSI 
+
+Analysis:*
+
+*
+
+*Current RSI 
+
+Reading:*
+
+- RSI value on daily chart
+
+- RSI value on weekly chart
+
+- Interpretation: Overbought (>70) / Neutral (30–70) / Oversold (<30)
+
+*RSI Divergence 
+
+Detection:*
+
+Carefully examine both daily and weekly charts for:
+
+**Bullish Divergence (Potential Buy Signal
+
+):*
+
+*
+
+- 🟢 Regular Bullish: Price making lower lows BUT RSI making higher lows
+
+ → Weakening bearish momentum, possible reversal upward
+
+- 🟢 Hidden Bullish: Price making higher lows BUT RSI making lower lows
+
+ → Uptrend continuation, good pullback entry point
+
+**Bearish Divergence (Potential Sell Signal
+
+):*
+
+*
+
+- 🔴 Regular Bearish: Price making higher highs BUT RSI making lower highs
+
+ → Weakening bullish momentum, possible reversal downward
+
+- 🔴 Hidden Bearish: Price making lower highs BUT RSI making higher highs
+
+ → Downtrend continuation, rally may be a trap
+
+*Divergence Summary 
+
+Table:*
+
+| Timeframe | Divergence Type | Price Action | RSI Action | Signal | Strength |
+
+|---|---|---|---|---|---|
+
+| Daily | | | | 🟢/🔴/None | Weak/Moderate/Strong |
+
+| Weekly | | | | 🟢/🔴/None | Weak/Moderate/Strong |
+
+- Is any divergence currently active or recently confirmed?
+
+- Has divergence been confirmed by a price breakout or breakdown?
+
+- Classify RSI signal as: 🟢 Bullish | 🔴 Bearish | 🟡 No Divergence Detected
+
+---
+
+## 10. 🌍 Macro & Sector Sensitivity
+
+- Fed interest rate impact — is this stock rate sensitive?
+
+- US Dollar (DXY) sensitivity — for multinationals, strong USD hurts overseas revenue
+
+- Inflation sensitivity — input costs vs pricing power
+
+- Recession sensitivity — cyclical vs defensive business?
+
+- Geopolitical risks — supply chain, China exposure, trade tariffs
+
+- Government policy tailwinds/headwinds (IRA, CHIPS Act, 
+
+defense
+
+ budgets etc.)
+
+- Commodity exposure (oil, semiconductors, rare earth metals)
+
+- Consumer sentiment impact (for retail/consumer discretionary stocks)
+
+---
+
+## 11. 📰 News vs. Chart Correlation
+
+- Are recent news events reflected in the price action?
+
+- Any price gaps or unusual volume spikes tied to news?
+
+- Is the market reacting rationally or overreacting to recent news?
+
+- Does the RSI divergence align with or contradict the news sentiment?
+
+- Any post-earnings drift pattern visible on the chart?
+
+---
+
+## 12. 🔭 Future Projections
+
+**Earnings & Revenue 
+
+Estimates:*
+
+*
+
+- Wall Street consensus EPS estimates for next 1–2 years
+
+- Revenue growth forecast (next 2–3 years)
+
+- Expected margin expansion or compression — and why
+
+- Earnings surprise history — does this company beat or miss estimates?
+
+**Business Growth 
+
+Drivers:*
+
+*
+
+- 3–4 key catalysts that could drive growth
+
+- New products, market expansions, M&A opportunities
+
+- AI/technology tailwinds (if applicable)
+
+- Management guidance and long-term targets
+
+**Scenario 
+
+Analysis:*
+
+*
+
+| Scenario | Probability | Key Assumption | Expected Price Range (1 year) |
+
+|---|---|---|---|
+
+| 🐂 Bull Case | % | | $ |
+
+| 🐄 Base Case | % | | $ |
+
+| 🐻 Bear Case | % | | $ |
+
+**Fair Value 
+
+Estimate:*
+
+*
+
+- Estimated intrinsic value range based on forward earnings / DCF
+
+- Upside / downside % from current price
+
+- Wall Street average price target vs current price
+
+---
+
+## 13. 🎯 Buy / Sell Recommendation
+
+**Overall 
+
+Recommendation:*
+
+*
+
+State clearly: 🟢 STRONG BUY | 🟦 BUY | 🟡 HOLD | 🟠 REDUCE | 🔴 SELL
+
+**Recommendation 
+
+Rationale:*
+
+*
+
+4–5 bullet points covering:
+
+- Valuation vs peers and historical average
+
+- Fundamental quality (earnings, margins, debt)
+
+- Liability & debt risk
+
+- Technical setup + RSI divergence signal
+
+- News sentiment & upcoming catalysts
+
+- Smart money activity (institutional, insider, short interest)
+
+- Future growth potential and earnings trajectory
+
+**For Existing 
+
+Holders:*
+
+*
+
+- Hold, add more, or book partial profits?
+
+- Exit price: $___
+
+- Stop loss: $___
+
+**For New 
+
+Investors:*
+
+*
+
+- Good time to enter?
+
+- Entry zone: $___ to $___
+
+- Position sizing suggestion
+
+- Recommended investment horizon
+
+**Risk-Reward 
+
+Summary:*
+
+*
+
+| | Level | Price |
+
+|---|---|---|
+
+| Current Price | | $ |
+
+| Target Price (Base) | | $ |
+
+| Target Price (Bull) | | $ |
+
+| Stop Loss | | $ |
+
+| Upside Potential | % | |
+
+| Downside Risk | % | |
+
+| Risk-Reward Ratio | 
+
+| :
+
+ 1 |
+
+---
+
+## 14. 📋 Verdict Scorecard
+
+| Parameter | Rating (1–5) | Comment |
+
+|---|---|---|
+
+| Business Quality | | |
+
+| Financial Health | | |
+
+| Earnings Quality | | |
+
+| Liability & Debt Risk | | |
+
+| Competitive Moat | | |
+
+| Management Quality | | |
+
+| Capital Allocation | | |
+
+| Institutional Activity | | |
+
+| Peer Standing | | |
+
+| Valuation | | |
+
+| Technical Setup | | |
+
+| RSI Divergence Signal | | |
+
+| News Sentiment | | |
+
+| Macro Sensitivity | | |
+
+| Future Growth Potential | | |
+
+| **Overall** | | |
+
+---
+
+## 15. 🗒️ PLAIN ENGLISH SUMMARY
+
+Write this section as if explaining to a friend who knows nothing about
+
+stock markets. Use simple language, no jargon, no technical terms.
+
+**What does this company 
+
+do?*
+
+*
+
+[2–3 lines on the business in everyday language]
+
+**Is the company financially 
+
+healthy?*
+
+*
+
+[Is it making money? Is it drowning in debt? Is cash flow strong?]
+
+**What are the biggest 
+
+risks?*
+
+*
+
+[Top 2–3 things that could go wrong — in plain terms]
+
+**What are the biggest 
+
+opportunities?*
+
+*
+
+[Top 2–3 reasons this stock could do well — in plain terms]
+
+**What is the smart money 
+
+doing?*
+
+*
+
+[Are big funds, insiders buying or selling? What does short interest say?]
+
+**Is the stock cheap or expensive right 
+
+now?*
+
+*
+
+[Simple valuation take — bargain, fair price, or overpriced?]
+
+**What do the charts 
+
+say?*
+
+*
+
+[Is the price going up, down, or sideways? Any warning signs or green flags?]
+
+**How sensitive is this stock to the economy & 
+
+Fed?*
+
+*
+
+[Will it get hurt by rate hikes, recession, or dollar strength?]
+
+**What could happen in the next 1 
+
+year?*
+
+*
+
+[Best case, worst case, and most likely outcome — in plain English]
+
+**
+
+So.
+
+.. should I buy, hold, or 
+
+sell?*
+
+*
+
+[Final straight-talking recommendation with simple reasoning]
+
+**One line 
+
+verdict:*
+
+*
+
+"This stock is __________ because __________."`,
+  'usa_stock_predictions': `You are a US stock market analyst specializing in NYSE and NASDAQ listed companies.
+
+Task 1 — Direct Catalyst Stocks (NYSE / NASDAQ):
+
+Search today's SEC filings (8-K, press releases), EDGAR announcements, and US financial news from the last 24–48 hours. Find companies that have announced:
+
+* MOU, LOI (Letter of Intent), or formal agreement signings
+
+* Government contract wins (DoD, DARPA, NASA, DOE, DHS, FAA, VA)
+
+* Federal bid wins or awarded status (GSA schedules, IDIQ contracts, sole-source awards)
+
+* Strategic partnerships, licensing deals, or joint ventures
+
+* Major commercial contract wins (specify $ value)
+
+* FDA approvals, clinical trial results, or regulatory clearances (Pharma/Biotech)
+
+* Capacity expansion, new factory, or major capex announcements
+
+* Export agreements or entry into new international markets
+
+Also flag SPECULATIVE / PRE-CATALYST signals even if no deal is confirmed yet:
+
+* Companies shortlisted or rumored to be in final rounds of a government bid
+
+* Analyst reports or government budget disclosures hinting at likely contract recipients
+
+* Companies whose technology closely matches a newly announced federal RFP or procurement notice
+
+* Sector leaders likely to benefit from a policy announcement or executive order signed this week
+
+* Companies with strong prior contract history in an agency that just received a new budget allocation
+
+* Rumored M&A targets, leaked partnership discussions, or executive commentary suggesting deal pipeline
+
+* Stocks with unusual options activity or dark pool volume spike in the last 48 hours suggesting informed positioning ahead of an announcement
+
+For each stock found (confirmed OR speculative), provide:
+
+1. Company name + NYSE/NASDAQ ticker
+
+2. Type of news: Confirmed / Speculative — (govt contract / MOU / JV / FDA approval / LOI / partnership / capex / rumor / RFP match / options signal)
+
+3. Deal value in $ millions or $ billions (if disclosed; or estimated range for speculative)
+
+4. Counterparty (DoD / NASA / private company / foreign govt / unknown)
+
+5. Sector (defence / AI / quantum / pharma / space / energy / infra / semiconductors / other)
+
+6. Confidence level for speculative picks: High Probability / Possible / Watch Only
+
+7. Expected stock impact: High / Medium / Low — with 1-line reasoning
+
+8. Is it options-eligible? (Yes / No)
+
+9. Market cap category: Large Cap / Mid Cap / Small Cap
+
+---
+
+Task 2 — Ecosystem Effect (Secondary Beneficiary Stocks):
+
+For any major trigger event this week — identify which NYSE/NASDAQ listed stocks will rally as secondary beneficiaries even without a direct deal of their own.
+
+Look for:
+
+* Sector peers of a company that just won a large government contract
+
+* Supply chain / component / subcontractor companies of the trigger company
+
+* Platform or technology partners that benefit from the trigger company's growth
+
+* ETFs or sector funds that will see inflows due to the trigger (mention the ETF ticker too)
+
+* Competitors that get re-rated upward when a peer gets government or institutional validation
+
+* Smaller companies in the same niche that could be acquisition targets following the trigger
+
+Also include SPECULATIVE secondary plays:
+
+* Companies that have publicly expressed interest in the same government programs as the trigger company
+
+* Peers whose stock has historically moved in correlation with the trigger company's catalysts
+
+* Stocks with similar technology profiles to a contract winner that could be next in line for awards
+
+* Any company recently added to a government-approved vendor list in the same domain
+
+For each secondary stock, provide:
+
+1. Company name + NYSE/NASDAQ ticker
+
+2. Trigger event that creates the halo effect
+
+3. Why this stock benefits (supply chain / peer re-rate / platform partner / M&A target / ETF inflow / speculative next-in-line)
+
+4. Confirmed or Speculative benefit?
+
+5. Impact: High / Medium / Low
+
+6. Timing: Immediate (0–3 days) / Short-term (1–2 weeks) / Delayed (2–4 weeks)
+
+7. Already priced in? Yes / Partially / Not yet
+
+8. Options-eligible? (Yes / No)
+
+9. Short interest % (if notable — high short interest + catalyst = squeeze potential)
+
+---
+
+Task 3 — Earnings Season Watch:
+
+If we are in or approaching earnings season, identify:
+
+* Companies reporting earnings this week whose guidance or results could trigger sector-wide moves
+
+* "Bellwether stocks" — companies whose earnings are a proxy for the whole sector
+
+* Any guidance upgrades, beat-and-raise situations, or pre-announcements that signal sector strength
+
+Also flag SPECULATIVE earnings plays:
+
+* Companies whose sector peers have already reported strong beats — increasing probability of a beat
+
+* Stocks where options market is pricing in a larger-than-usual move (high IV crush opportunity or momentum play)
+
+* Companies where analyst whisper numbers are meaningfully above consensus — suggesting upside surprise risk
+
+* Any company that pre-announced revenue, updated guidance, or had an executive buy shares in the last 2 weeks
+
+---
+
+Filters to apply across all tasks:
+
+* Only NYSE or NASDAQ listed US stocks
+
+* Confirmed news must be from last 24–48 hours (flag if older but still unpriced)
+
+* Speculative signals can be from the last 5–7 days if still actionable
+
+* Flag stocks where institutional ownership is rising (13F signals, dark pool activity)
+
+* Flag any stock with notable short interest that could squeeze on positive catalyst
+
+* Note if the catalyst aligns with a current macro theme (AI boom / defence spending / energy security / reshoring / biotech innovation)
+
+* For every speculative pick, clearly label it: ⚠️ SPECULATIVE — and state the basis (rumor / options signal / RFP match / historical pattern / analyst hint)
+
+---
+
+End with a ranked shortlist of top 7 stocks to watch today, sorted by conviction level.
+
+Format:
+
+Rank | Ticker | Confirmed or Speculative | One-line trade thesis | Conviction: High / Medium / Speculative Play`
+};
+    const PROMPT_META = [
+  { id: 'indian_market_news', title: 'Indian Market News', region: 'India', emoji: 'ðŸ‡®ðŸ‡³', subtitle: 'Stocks with positive catalysts & developments', file: '../Analysis/India\Indian_Market_News.docx' },
+  { id: 'indian_results_week', title: 'Indian Results Week', region: 'India', emoji: 'ðŸ‡®ðŸ‡³', subtitle: 'Weekly results & earnings analysis', file: '../Analysis/India\Indian_Results_Week.docx' },
+  { id: 'indian_stock_analysis', title: 'Indian Stock Analysis', region: 'India', emoji: 'ðŸ‡®ðŸ‡³', subtitle: 'In-depth stock & sector research', file: '../Analysis/India\Indian_Stock_Analysis.docx' },
+  { id: 'indian_stock_predictions', title: 'Indian Stock Predictions', region: 'India', emoji: 'ðŸ‡®ðŸ‡³', subtitle: 'Forward-looking price & trend forecasts', file: '../Analysis/India\Indian_Stock_Predictions.docx' },
+  { id: 'usa_market_news', title: 'USA Market News', region: 'USA', emoji: 'ðŸ‡ºðŸ‡¸', subtitle: 'Stocks with positive catalysts & developments', file: '../Analysis/USA\USA_Market_News.docx' },
+  { id: 'usa_results_week', title: 'USA Results Week', region: 'USA', emoji: 'ðŸ‡ºðŸ‡¸', subtitle: 'Weekly results & earnings analysis', file: '../Analysis/USA\USA_Results_Week.docx' },
+  { id: 'usa_stock_analysis', title: 'USA Stock Analysis', region: 'USA', emoji: 'ðŸ‡ºðŸ‡¸', subtitle: 'In-depth stock & sector research', file: '../Analysis/USA\USA_Stock_Analysis.docx' },
+  { id: 'usa_stock_predictions', title: 'USA Stock Predictions', region: 'USA', emoji: 'ðŸ‡ºðŸ‡¸', subtitle: 'Forward-looking price & trend forecasts', file: '../Analysis/USA\USA_Stock_Predictions.docx' }
+];
+
+    let currentPromptId = null;
+
+    function getCurrentDateLine(region) {
+      const now = new Date();
+      const tz = (region === 'India') ? 'Asia/Kolkata' : 'America/Chicago';
+      const label = (region === 'India') ? 'IST' : 'CST';
+      // en-CA gives stable YYYY-MM-DD; timeZone forces the correct market date
+      const ymd = now.toLocaleDateString('en-CA', { timeZone: tz });
+      return `Current date (${label}): ${ymd}`;
+    }
+
+    function createCard(meta) {
+      const isIndia = meta.region === 'India';
+      const cardClass = isIndia ? 'india-card border-amber-500/60 hover:border-amber-400' : 'usa-card border-blue-500/60 hover:border-blue-400';
+      const badgeClass = isIndia ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400';
+      const div = document.createElement('div');
+      div.className = `prompt-card group cursor-pointer bg-zinc-900 border ${cardClass} rounded-3xl p-5 flex flex-col`;
+      div.innerHTML = `
+        <div class="flex items-start justify-between mb-3">
+          <div class="text-3xl transition-transform group-hover:scale-110 duration-200">${meta.emoji}</div>
+          <div class="${badgeClass} text-xs font-medium px-2.5 py-px rounded-full self-start">${meta.region}</div>
+        </div>
+        <div class="font-semibold text-lg leading-tight tracking-tight mb-1 pr-1">${meta.title}</div>
+        <div class="text-zinc-400 text-sm mb-4 line-clamp-2">${meta.subtitle}</div>
+        <div class="mt-auto pt-3 border-t border-white/5 flex items-center justify-between">
+          <div class="text-[10px] font-medium text-zinc-500 flex items-center gap-1">
+            <i class="fa-solid fa-file-lines"></i>
+            <span class="font-mono">.docx</span>
+          </div>
+          <div class="prompt-button inline-flex items-center gap-x-1.5 text-xs font-semibold px-3 py-1 rounded-2xl bg-white/5 group-hover:bg-white/10 text-white/70 group-hover:text-white transition-colors">
+            VIEW PROMPT <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </div>
+        </div>`;
+      div.addEventListener('click', () => openPrompt(meta.id));
+      return div;
+    }
+
+    function renderButtons() {
+      const ig = document.getElementById('india-grid');
+      const ug = document.getElementById('usa-grid');
+      ig.innerHTML = ''; ug.innerHTML = '';
+      PROMPT_META.forEach(m => {
+        const c = createCard(m);
+        (m.region === 'India' ? ig : ug).appendChild(c);
+      });
+    }
+
+    function openPrompt(id) {
+      currentPromptId = id;
+      const meta = PROMPT_META.find(m => m.id === id);
+      const original = PROMPTS[id] || '[Prompt not found]';
+      const dateLine = getCurrentDateLine(meta.region);
+      const displayText = dateLine + '\n\n' + original;
+
+      const hdr = document.getElementById('modal-header');
+      const isInd = meta.region === 'India';
+      hdr.innerHTML = `
+        <div class="flex items-center gap-x-3">
+          <div class="text-4xl">${meta.emoji}</div>
+          <div>
+            <div class="flex items-center gap-x-2">
+              <span class="font-semibold text-xl tracking-tight">${meta.title}</span>
+              <span class="text-xs px-2 py-0.5 rounded-full ${isInd ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}">${meta.region}</span>
+            </div>
+            <div class="text-xs text-zinc-400">${meta.subtitle}</div>
+          </div>
+        </div>`;
+      document.getElementById('modal-prompt-text').textContent = displayText;
+      document.getElementById('modal-char-count').textContent = displayText.length.toLocaleString() + ' characters (incl. date)';
+      const md = document.getElementById('modal');
+      md.classList.remove('hidden');
+      md.classList.add('flex');
+    }
+
+    function closeModal() {
+      const md = document.getElementById('modal');
+      md.classList.remove('flex');
+      md.classList.add('hidden');
+      currentPromptId = null;
+    }
+
+    function copyCurrentPrompt() {
+      if (!currentPromptId) return;
+      const meta = PROMPT_META.find(m => m.id === currentPromptId);
+      const original = PROMPTS[currentPromptId] || '';
+      const dateLine = getCurrentDateLine(meta.region);
+      const finalPrompt = dateLine + '\n\n' + original;
+      copyToClipboard(finalPrompt, 'Prompt + current date (' + (meta.region === 'India' ? 'IST' : 'CST') + ') copied!');
+    }
+
+    function copySourcePath() {
+      if (!currentPromptId) return;
+      const m = PROMPT_META.find(x => x.id === currentPromptId);
+      const p = m.file;   // generator now provides ../Analysis/... prefix
+      copyToClipboard(p, 'Relative path copied (use from PromptPortal parent)');
+    }
+
+    async function copyToClipboard(text, msg) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(msg || 'Copied!');
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast(msg || 'Copied!');
+      }
+    }
+
+    function showToast(msg) {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast flex items-center gap-x-2 px-4 py-3 bg-zinc-800 border border-zinc-700 text-sm rounded-2xl shadow-xl max-w-xs';
+      t.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i><span class="font-medium">${msg}</span>`;
+      c.appendChild(t);
+      setTimeout(() => { t.style.transition='all .2s'; t.style.opacity='0'; setTimeout(() => t.parentNode && t.parentNode.removeChild(t), 160); }, 2100);
+    }
+
+    function copyAllPaths() {
+      const txt = PROMPT_META.map(m => m.file).join('\n');   // paths already include ../Analysis prefix
+      copyToClipboard(txt, 'All 8 relative paths copied (../Analysis)');
+    }
+
+    function showHelp() {
+      const msg = `How to use this portal:
+
+1. Click any of the 8 cards (India or USA) to open its prompt.
+2. The prompt ALWAYS includes today's date in the correct timezone:
+   - India prompts → IST (Asia/Kolkata)
+   - USA prompts → CST (America/Chicago)
+3. Click "Copy Prompt to Clipboard" — the copied text will start with the current date line.
+4. Paste directly into your LLM (Grok, Claude, GPT, etc). The LLM will know the exact "today".
+
+Location flexibility:
+- The portal loads prompts from the sibling ../Analysis folder.
+- You can move or rename the entire "Analysis" folder frequently.
+- Just keep the PromptPortal folder as a sibling and re-run the generator.
+
+Refresh after edits:
+- Update the .docx files inside Analysis/India or Analysis/USA.
+- Run generate-prompt-portal.ps1 from inside the PromptPortal folder.
+- Re-open (or hard-refresh) index.html.
+
+Tip: Pin index.html to your taskbar or browser bookmarks for one-click access.`;
+
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px';
+      wrap.onclick = () => wrap.remove();
+      const box = document.createElement('div');
+      box.style.cssText = 'max-width:620px;width:100%;background:#18181b;border:1px solid #3f3f46;border-radius:20px;overflow:hidden';
+      box.innerHTML = '<div style="padding:14px 18px;border-bottom:1px solid #27272a;display:flex;justify-content:space-between;align-items:center"><strong>How to use</strong><button style="font-size:12px;background:#27272a;padding:4px 12px;border-radius:999px">Close</button></div>';
+      const pre = document.createElement('pre');
+      pre.style.cssText = 'margin:12px 18px 18px;padding:16px;background:#111827;border-radius:14px;white-space:pre-wrap;font-size:13px;line-height:1.55;max-height:48vh;overflow:auto';
+      pre.textContent = msg;
+      box.appendChild(pre);
+      wrap.appendChild(box);
+      document.body.appendChild(wrap);
+      box.querySelector('button').onclick = () => wrap.remove();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        const m = document.getElementById('modal');
+        if (!m.classList.contains('hidden')) closeModal();
+      }
+      if (e.key === '?' && document.activeElement === document.body) { e.preventDefault(); showHelp(); }
+    });
+
+    function init() {
+      renderButtons();
+      console.log('%c[PromptsPortal] Ready. window.PromptsPortal available in console.', 'color:#3f3f46');
+      window.PromptsPortal = { open: openPrompt, meta: PROMPT_META, prompts: PROMPTS, refreshHint: 'Re-run the .ps1 generator to update embedded content.' };
+    }
+    init();
+  </script>
+</body>
+</html>
+
