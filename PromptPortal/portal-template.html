@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analysis Prompts Portal</title>
+  <title>Prompts Portal by Dharmendra</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
@@ -39,7 +39,7 @@
           <i class="fa-solid fa-file-lines text-white text-3xl"></i>
         </div>
         <div>
-          <h1 class="text-4xl font-display tracking-tighter">Prompts Portal</h1>
+          <h1 class="text-4xl font-display tracking-tighter">Prompts Portal by Dharmendra</h1>
           <p class="text-zinc-400 text-sm -mt-1">Analysis • India & USA Markets</p>
         </div>
       </div>
@@ -155,9 +155,8 @@
       const div = document.createElement('div');
       div.className = `prompt-card group cursor-pointer bg-zinc-900 border ${cardClass} rounded-3xl p-5 flex flex-col`;
       div.innerHTML = `
-        <div class="flex items-start justify-between mb-3">
-          <div class="text-3xl transition-transform group-hover:scale-110 duration-200">${meta.emoji}</div>
-          <div class="${badgeClass} text-xs font-medium px-2.5 py-px rounded-full self-start">${meta.region}</div>
+        <div class="mb-2">
+          <div class="${badgeClass} text-xs font-medium px-2.5 py-px rounded-full inline-block">${meta.region}</div>
         </div>
         <div class="font-semibold text-lg leading-tight tracking-tight mb-1 pr-1">${meta.title}</div>
         <div class="text-zinc-400 text-sm mb-4 line-clamp-2">${meta.subtitle}</div>
@@ -195,7 +194,6 @@
       const isInd = meta.region === 'India';
       hdr.innerHTML = `
         <div class="flex items-center gap-x-3">
-          <div class="text-4xl">${meta.emoji}</div>
           <div>
             <div class="flex items-center gap-x-2">
               <span class="font-semibold text-xl tracking-tight">${meta.title}</span>

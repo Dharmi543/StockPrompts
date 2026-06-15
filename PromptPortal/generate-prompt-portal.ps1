@@ -94,14 +94,14 @@ function EscapeJsTemplate([string]$s) {
 }
 
 $entries = @(
-    @{ id='indian_market_news'; title='Indian Market News'; region='India'; emoji='🇮🇳'; subtitle='Stocks with positive catalysts & developments'; rel='India\Indian_Market_News.docx' }
-    @{ id='indian_results_week'; title='Indian Results Week'; region='India'; emoji='🇮🇳'; subtitle='Weekly results & earnings analysis'; rel='India\Indian_Results_Week.docx' }
-    @{ id='indian_stock_analysis'; title='Indian Stock Analysis'; region='India'; emoji='🇮🇳'; subtitle='In-depth stock & sector research'; rel='India\Indian_Stock_Analysis.docx' }
-    @{ id='indian_stock_predictions'; title='Indian Stock Predictions'; region='India'; emoji='🇮🇳'; subtitle='Forward-looking price & trend forecasts'; rel='India\Indian_Stock_Predictions.docx' }
-    @{ id='usa_market_news'; title='USA Market News'; region='USA'; emoji='🇺🇸'; subtitle='Stocks with positive catalysts & developments'; rel='USA\USA_Market_News.docx' }
-    @{ id='usa_results_week'; title='USA Results Week'; region='USA'; emoji='🇺🇸'; subtitle='Weekly results & earnings analysis'; rel='USA\USA_Results_Week.docx' }
-    @{ id='usa_stock_analysis'; title='USA Stock Analysis'; region='USA'; emoji='🇺🇸'; subtitle='In-depth stock & sector research'; rel='USA\USA_Stock_Analysis.docx' }
-    @{ id='usa_stock_predictions'; title='USA Stock Predictions'; region='USA'; emoji='🇺🇸'; subtitle='Forward-looking price & trend forecasts'; rel='USA\USA_Stock_Predictions.docx' }
+    @{ id='indian_market_news'; title='Indian Market News'; region='India'; emoji=''; subtitle='Stocks with positive catalysts & developments'; rel='India\Indian_Market_News.docx' }
+    @{ id='indian_results_week'; title='Indian Results Week'; region='India'; emoji=''; subtitle='Weekly results & earnings analysis'; rel='India\Indian_Results_Week.docx' }
+    @{ id='indian_stock_analysis'; title='Indian Stock Analysis'; region='India'; emoji=''; subtitle='In-depth stock & sector research'; rel='India\Indian_Stock_Analysis.docx' }
+    @{ id='indian_stock_predictions'; title='Indian Stock Predictions'; region='India'; emoji=''; subtitle='Forward-looking price & trend forecasts'; rel='India\Indian_Stock_Predictions.docx' }
+    @{ id='usa_market_news'; title='USA Market News'; region='USA'; emoji=''; subtitle='Stocks with positive catalysts & developments'; rel='USA\USA_Market_News.docx' }
+    @{ id='usa_results_week'; title='USA Results Week'; region='USA'; emoji=''; subtitle='Weekly results & earnings analysis'; rel='USA\USA_Results_Week.docx' }
+    @{ id='usa_stock_analysis'; title='USA Stock Analysis'; region='USA'; emoji=''; subtitle='In-depth stock & sector research'; rel='USA\USA_Stock_Analysis.docx' }
+    @{ id='usa_stock_predictions'; title='USA Stock Predictions'; region='USA'; emoji=''; subtitle='Forward-looking price & trend forecasts'; rel='USA\USA_Stock_Predictions.docx' }
 )
 
 # Prefix used in the portal for "Copy .docx path" buttons and footer.
