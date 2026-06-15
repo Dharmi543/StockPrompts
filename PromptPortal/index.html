@@ -46,7 +46,7 @@
       <div class="flex items-center gap-x-3 text-sm">
         <div class="px-3 py-1.5 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center gap-x-2">
           <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-          <span class="text-emerald-400 font-medium">8 Prompts Ready</span>
+          <span class="text-emerald-400 font-medium">9 Prompts Ready</span>
         </div>
         <button onclick="copyAllPaths()" class="px-3 py-1.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 flex items-center gap-x-2 text-sm transition-colors">
           <i class="fa-solid fa-copy"></i>
@@ -87,7 +87,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-6 border-t border-zinc-800 text-xs text-zinc-500 gap-y-2">
       <div>
         Prompts loaded from: <span class="font-mono text-zinc-400">../Analysis</span> (relative to this portal)<br>
-        Generated: 2026-06-14 22:05 • Run <span class="font-mono bg-zinc-900 px-1.5 py-0.5 rounded">generate-prompt-portal.ps1</span> from the PromptPortal folder to refresh.
+        Generated: 2026-06-15 17:33 • Run <span class="font-mono bg-zinc-900 px-1.5 py-0.5 rounded">generate-prompt-portal.ps1</span> from the PromptPortal folder to refresh.
       </div>
       <div class="flex items-center gap-x-4">
         <button onclick="showHelp()" class="hover:text-zinc-300 transition-colors flex items-center gap-x-1.5">
@@ -2470,7 +2470,38 @@ End with a ranked shortlist of top 7 stocks to watch today, sorted by conviction
 
 Format:
 
-Rank | Ticker | Confirmed or Speculative | One-line trade thesis | Conviction: High / Medium / Speculative Play`
+Rank | Ticker | Confirmed or Speculative | One-line trade thesis | Conviction: High / Medium / Speculative Play`,
+  'usa_analyst_ratings': `Search the web for the latest analyst ratings issued today or within the last 7 days by the following major investment banks and rating agencies:
+
+- Morgan Stanley
+
+- Citibank (Citi)
+
+- Bank of America (BofA / Merrill Lynch)
+
+Filter results to show ONLY ratings that meet ONE or MORE of these criteria:
+
+1. Rating is "Strong Buy", "Buy", or "Overweight"
+
+2. Price target was RAISED or INCREASED compared to the previous target
+
+Focus exclusively on US-listed stocks (NYSE, NASDAQ, NYSE American).
+
+Present all qualifying results in a clean, structured table with these exact columns:
+
+| Date | Bank / Analyst Firm | Stock Ticker | Company Name | Rating | Previous Target ($) | New Target ($) | Change ($) | Change (%) | Sector |
+
+Rules:
+
+- Sort the table by date (most recent first)
+
+- If a price target was not changed, still include the row if the rating is Strong Buy / Buy / Overweight
+
+- If the rating changed (e.g. upgraded to Buy), note the previous rating in parentheses under the Rating column
+
+- Round all dollar values to 2 decimal places
+
+- At the end, add a short summary: total number of recommendations found, and which bank issued the most bullish calls today`
 };
     const PROMPT_META = [
   { id: 'indian_market_news', title: 'Indian Market News', region: 'India', emoji: '', subtitle: 'Stocks with positive catalysts & developments', file: '../Analysis/India\Indian_Market_News.docx' },
@@ -2480,7 +2511,8 @@ Rank | Ticker | Confirmed or Speculative | One-line trade thesis | Conviction: H
   { id: 'usa_market_news', title: 'USA Market News', region: 'USA', emoji: '', subtitle: 'Stocks with positive catalysts & developments', file: '../Analysis/USA\USA_Market_News.docx' },
   { id: 'usa_results_week', title: 'USA Results Week', region: 'USA', emoji: '', subtitle: 'Weekly results & earnings analysis', file: '../Analysis/USA\USA_Results_Week.docx' },
   { id: 'usa_stock_analysis', title: 'USA Stock Analysis', region: 'USA', emoji: '', subtitle: 'In-depth stock & sector research', file: '../Analysis/USA\USA_Stock_Analysis.docx' },
-  { id: 'usa_stock_predictions', title: 'USA Stock Predictions', region: 'USA', emoji: '', subtitle: 'Forward-looking price & trend forecasts', file: '../Analysis/USA\USA_Stock_Predictions.docx' }
+  { id: 'usa_stock_predictions', title: 'USA Stock Predictions', region: 'USA', emoji: '', subtitle: 'Forward-looking price & trend forecasts', file: '../Analysis/USA\USA_Stock_Predictions.docx' },
+  { id: 'usa_analyst_ratings', title: 'USA Analyst Ratings', region: 'USA', emoji: '', subtitle: 'Analyst ratings, price targets & recommendations', file: '../Analysis/USA\USA_Analyst_Ratings.docx' }
 ];
 
     let currentPromptId = null;
@@ -2534,7 +2566,6 @@ Rank | Ticker | Confirmed or Speculative | One-line trade thesis | Conviction: H
       const meta = PROMPT_META.find(m => m.id === id);
       const original = PROMPTS[id] || '[Prompt not found]';
       const dateLine = getCurrentDateLine(meta.region);
-      const displayText = dateLine + '\n\n' + original;
 
       const hdr = document.getElementById('modal-header');
       const isInd = meta.region === 'India';
@@ -2548,8 +2579,27 @@ Rank | Ticker | Confirmed or Speculative | One-line trade thesis | Conviction: H
             <div class="text-xs text-zinc-400">${meta.subtitle}</div>
           </div>
         </div>`;
-      document.getElementById('modal-prompt-text').textContent = displayText;
-      document.getElementById('modal-char-count').textContent = displayText.length.toLocaleString() + ' characters (incl. date)';
+
+      const pre = document.getElementById('modal-prompt-text');
+      const countEl = document.getElementById('modal-char-count');
+
+      if (original.startsWith('[')) {
+        // Special handling for extraction errors
+        pre.innerHTML = `
+          <div class="mb-4 p-4 bg-red-900/30 border border-red-500/50 rounded-2xl text-red-300 text-sm">
+            <div class="font-semibold mb-1">⚠️ Prompt could not be loaded</div>
+            <div class="text-red-400/80">This usually means the .docx file is open in Microsoft Word or locked by OneDrive sync.</div>
+          </div>
+          <div class="text-xs text-zinc-500 mb-2">Technical details:</div>
+          <div class="text-red-400/70 font-mono text-xs whitespace-pre-wrap">${original}</div>
+        `;
+        countEl.textContent = 'Extraction failed — close the file and re-generate';
+      } else {
+        const displayText = dateLine + '\n\n' + original;
+        pre.textContent = displayText;
+        countEl.textContent = displayText.length.toLocaleString() + ' characters (incl. date)';
+      }
+
       const md = document.getElementById('modal');
       md.classList.remove('hidden');
       md.classList.add('flex');
@@ -2566,6 +2616,19 @@ Rank | Ticker | Confirmed or Speculative | One-line trade thesis | Conviction: H
       if (!currentPromptId) return;
       const meta = PROMPT_META.find(m => m.id === currentPromptId);
       const original = PROMPTS[currentPromptId] || '';
+
+      if (original.startsWith('[')) {
+        const helpful = `The prompt for "${meta.title}" could not be loaded.\n\n` +
+                        `This usually happens when the .docx file is open in Microsoft Word.\n\n` +
+                        `Fix:\n` +
+                        `1. Close ${meta.title}.docx in Word (and any other programs).\n` +
+                        `2. Wait a few seconds for OneDrive to release the lock.\n` +
+                        `3. Run generate-prompt-portal.ps1 again from the PromptPortal folder.\n` +
+                        `4. Refresh this page.`;
+        copyToClipboard(helpful, 'Helpful instructions copied (instead of the error)');
+        return;
+      }
+
       const dateLine = getCurrentDateLine(meta.region);
       const finalPrompt = dateLine + '\n\n' + original;
       copyToClipboard(finalPrompt, 'Prompt + current date (' + (meta.region === 'India' ? 'IST' : 'CST') + ') copied!');
@@ -2601,13 +2664,13 @@ Rank | Ticker | Confirmed or Speculative | One-line trade thesis | Conviction: H
 
     function copyAllPaths() {
       const txt = PROMPT_META.map(m => m.file).join('\n');   // paths already include ../Analysis prefix
-      copyToClipboard(txt, 'All 8 relative paths copied (../Analysis)');
+      copyToClipboard(txt, 'All 9 relative paths copied (../Analysis)');
     }
 
     function showHelp() {
       const msg = `How to use this portal:
 
-1. Click any of the 8 cards (India or USA) to open its prompt.
+1. Click any of the 9 cards (India or USA) to open its prompt.
 2. The prompt ALWAYS includes today's date in the correct timezone:
    - India prompts → IST (Asia/Kolkata)
    - USA prompts → CST (America/Chicago)

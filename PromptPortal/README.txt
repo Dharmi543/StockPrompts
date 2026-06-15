@@ -5,7 +5,7 @@ Open index.html in any modern browser (Chrome, Edge, Firefox).
 
 HOW TO USE
 ----------
-- You will see 8 beautiful cards: 4 for India + 4 for USA.
+- You will see 9 beautiful cards: 4 for India + 5 for USA.
 - Click any card to open the full prompt.
 - The portal **always injects the current system date** at the top of the prompt:
     • India prompts → "Current date (IST): YYYY-MM-DD"   (using Asia/Kolkata)
@@ -39,11 +39,30 @@ Prompts source: ../Analysis (relative to PromptPortal)
 
 VERIFICATION TIP
 ----------------
-Every time you run generate-prompt-portal.ps1, it now prints a line for each of the 8 prompts:
+Every time you run generate-prompt-portal.ps1, it now prints a line for each of the 9 prompts:
   [OK]   Indian Market News             1570 chars  | Indian Stock Market Analysis Prompt: "Please identify...
 
-- Look for [OK] on all 8 lines.
+- Look for [OK] on all 9 lines.
 - The preview after the | should look like the beginning of your prompt in the .docx.
 - If you see [ERROR] or very short length, something went wrong with that specific document — check the .docx or share the output here.
 
 The extraction was upgraded (June 2026) to use real XML parsing instead of fragile regex, so it should now reliably pull the full prompt text from your Word documents.
+
+TROUBLESHOOTING: "FILE IN USE" / "being used by another process"
+----------------------------------------------------------------
+If you see an extraction error like:
+
+  [FILE IN USE] The .docx file is currently locked...
+
+This almost always means one of these:
+- The .docx is open in Microsoft Word
+- OneDrive is actively syncing the file
+- Another program has a lock on it
+
+How to fix:
+1. Completely close the document in Word (File → Close, or exit Word).
+2. Wait 3–5 seconds for OneDrive to finish syncing.
+3. Re-run generate-prompt-portal.ps1 from the PromptPortal folder.
+4. Refresh the portal page.
+
+The generator now has retries + much clearer error messages for this exact situation.

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Refreshes the Analysis Prompts Portal (index.html) from the latest content of your 8 .docx prompt files.
+  Refreshes the Analysis Prompts Portal (index.html) from the latest content of your .docx prompt files.
 
   Run this file from inside the PromptPortal folder.
   It will automatically read the prompts from the sibling ../Analysis folder.
@@ -28,60 +28,80 @@ if (-not (Test-Path $analysisRoot)) {
 
 function Get-DocxPlainText([string]$Path) {
     if (-not (Test-Path $Path)) { return "[FILE NOT FOUND: $Path]" }
+
+    Add-Type -AssemblyName 'System.IO.Compression.FileSystem' -ErrorAction SilentlyContinue | Out-Null
+
+    $zip = $null
+    $maxRetries = 5
+    $baseDelay = 300  # ms
+
+    for ($attempt = 0; $attempt -lt $maxRetries; $attempt++) {
+        try {
+            $zip = [System.IO.Compression.ZipFile]::OpenRead($Path)
+            break
+        } catch {
+            $msg = $_.Exception.Message
+            if ($attempt -eq ($maxRetries - 1)) {
+                # Final failure - give a helpful message
+                if ($msg -like "*being used by another process*" -or $msg -like "*access*denied*" -or $msg -like "*cannot access*") {
+                    return "[FILE IN USE] The .docx file is currently locked (probably open in Microsoft Word or being synced by OneDrive).`n`nClose the document in Word, wait a few seconds for OneDrive sync to finish, then re-run generate-prompt-portal.ps1."
+                }
+                return "[EXTRACTION ERROR] Could not open the file after $maxRetries attempts.`nDetails: $msg`n`nTip: Close Microsoft Word completely and make sure no other program has the file open."
+            }
+            # Exponential backoff
+            $delay = $baseDelay * [Math]::Pow(1.6, $attempt)
+            Start-Sleep -Milliseconds ([int]$delay)
+        }
+    }
+
+    if ($null -eq $zip) {
+        return "[EXTRACTION ERROR] Failed to open file after retries."
+    }
+
     try {
-        Add-Type -AssemblyName 'System.IO.Compression.FileSystem' -ErrorAction SilentlyContinue | Out-Null
-        $zip = [System.IO.Compression.ZipFile]::OpenRead($Path)
         $entry = $zip.GetEntry('word/document.xml')
-        if (-not $entry) { $zip.Dispose(); return "[NO DOCUMENT XML]" }
+        if (-not $entry) { 
+            $zip.Dispose()
+            return "[NO DOCUMENT XML]" 
+        }
+
         $reader = New-Object System.IO.StreamReader($entry.Open(), [System.Text.Encoding]::UTF8)
         $xmlContent = $reader.ReadToEnd()
-        $reader.Dispose(); $zip.Dispose()
+        $reader.Dispose()
+        $zip.Dispose()
 
-        # Proper XML parsing with namespace (much more reliable than regex for .docx)
+        # Proper XML parsing with namespace
         $doc = [xml]$xmlContent
         $nsMgr = New-Object System.Xml.XmlNamespaceManager($doc.NameTable)
         $nsMgr.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main")
 
         $paragraphs = @()
-
-        # Prefer paragraphs inside the main body for accuracy
         $body = $doc.SelectSingleNode("//w:body", $nsMgr)
         $searchRoot = if ($body) { $body } else { $doc }
 
         $paraNodes = $searchRoot.SelectNodes(".//w:p", $nsMgr)
 
         foreach ($p in $paraNodes) {
-            # Collect all text runs (w:t), deleted text, etc.
             $textParts = $p.SelectNodes(".//w:t | .//w:delText", $nsMgr) | ForEach-Object { $_.InnerText }
-
             $paraText = ($textParts -join "").Trim()
-
-            # Handle simple line breaks inside paragraph
-            $breaks = $p.SelectNodes(".//w:br | .//w:cr", $nsMgr)
-            if ($breaks.Count -gt 0 -and $paraText) {
-                # Very basic handling - treat breaks as space for prompts (most are single line instructions)
-            }
-
-            if ($paraText) {
-                $paragraphs += $paraText
-            }
+            if ($paraText) { $paragraphs += $paraText }
         }
 
         $result = $paragraphs -join "`n`n"
 
-        # Strong fallback: collect EVERY text node in the document if we got almost nothing
         if ([string]::IsNullOrWhiteSpace($result) -or $result.Length -lt 30) {
             $allText = $doc.SelectNodes("//w:t | //w:delText", $nsMgr) | ForEach-Object { $_.InnerText }
             $result = ($allText -join " ").Trim()
             $result = [regex]::Replace($result, '\s+', ' ')
         }
 
-        # Final cleanup
         $result = $result -replace ' {2,}', ' '
         $result = $result -replace "`n{3,}", "`n`n"
         return $result.Trim()
-    } catch {
-        return "[EXTRACTION ERROR: $($_.Exception.Message)]"
+    }
+    catch {
+        if ($zip) { $zip.Dispose() }
+        return "[EXTRACTION ERROR] $($_.Exception.Message)"
     }
 }
 
@@ -102,6 +122,7 @@ $entries = @(
     @{ id='usa_results_week'; title='USA Results Week'; region='USA'; emoji=''; subtitle='Weekly results & earnings analysis'; rel='USA\USA_Results_Week.docx' }
     @{ id='usa_stock_analysis'; title='USA Stock Analysis'; region='USA'; emoji=''; subtitle='In-depth stock & sector research'; rel='USA\USA_Stock_Analysis.docx' }
     @{ id='usa_stock_predictions'; title='USA Stock Predictions'; region='USA'; emoji=''; subtitle='Forward-looking price & trend forecasts'; rel='USA\USA_Stock_Predictions.docx' }
+    @{ id='usa_analyst_ratings'; title='USA Analyst Ratings'; region='USA'; emoji=''; subtitle='Analyst ratings, price targets & recommendations'; rel='USA\USA_Analyst_Ratings.docx' }
 )
 
 # Prefix used in the portal for "Copy .docx path" buttons and footer.
@@ -121,6 +142,20 @@ foreach ($e in $entries) {
 
     $status = if ($txt.StartsWith("[")) { "ERROR" } else { "OK" }
     Write-Host ("  [{0}] {1,-28} {2,6} chars  | {3}" -f $status, $e.title, $txt.Length, $preview) -ForegroundColor $(if ($status -eq "OK") { "Green" } else { "Red" })
+}
+
+# Summary of any extraction problems
+$failed = $entries | Where-Object { $promptTexts[$_.id].StartsWith("[") }
+if ($failed.Count -gt 0) {
+    Write-Host ""
+    Write-Host "⚠️  EXTRACTION ISSUES DETECTED for $($failed.Count) file(s):" -ForegroundColor Yellow
+    foreach ($f in $failed) {
+        Write-Host "   - $($f.title)" -ForegroundColor Yellow
+    }
+    Write-Host ""
+    Write-Host "Most common cause: The .docx file is open in Microsoft Word or locked by OneDrive." -ForegroundColor Yellow
+    Write-Host "Fix: Close the file(s) completely in Word, wait 3-5 seconds, then run this script again." -ForegroundColor Yellow
+    Write-Host ""
 }
 
 # Build the JS snippets that will be injected
