@@ -5,7 +5,7 @@ Open index.html in any modern browser (Chrome, Edge, Firefox).
 
 HOW TO USE
 ----------
-- You will see 9 beautiful cards: 4 for India + 5 for USA.
+- You will see 10 beautiful cards: 5 for India + 5 for USA.
 - Click any card to open the full prompt.
 - The portal **always injects the current system date** at the top of the prompt:
     • India prompts → "Current date (IST): YYYY-MM-DD"   (using Asia/Kolkata)
@@ -39,10 +39,10 @@ Prompts source: ../Analysis (relative to PromptPortal)
 
 VERIFICATION TIP
 ----------------
-Every time you run generate-prompt-portal.ps1, it now prints a line for each of the 9 prompts:
+Every time you run generate-prompt-portal.ps1, it now prints a line for each of the 10 prompts:
   [OK]   Indian Market News             1570 chars  | Indian Stock Market Analysis Prompt: "Please identify...
 
-- Look for [OK] on all 9 lines.
+- Look for [OK] on all 10 lines.
 - The preview after the | should look like the beginning of your prompt in the .docx.
 - If you see [ERROR] or very short length, something went wrong with that specific document — check the .docx or share the output here.
 

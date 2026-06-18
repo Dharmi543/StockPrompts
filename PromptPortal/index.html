@@ -46,7 +46,7 @@
       <div class="flex items-center gap-x-3 text-sm">
         <div class="px-3 py-1.5 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center gap-x-2">
           <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-          <span class="text-emerald-400 font-medium">9 Prompts Ready</span>
+          <span class="text-emerald-400 font-medium">10 Prompts Ready</span>
         </div>
         <button onclick="copyAllPaths()" class="px-3 py-1.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 flex items-center gap-x-2 text-sm transition-colors">
           <i class="fa-solid fa-copy"></i>
@@ -87,7 +87,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-6 border-t border-zinc-800 text-xs text-zinc-500 gap-y-2">
       <div>
         Prompts loaded from: <span class="font-mono text-zinc-400">../Analysis</span> (relative to this portal)<br>
-        Generated: 2026-06-15 17:33 • Run <span class="font-mono bg-zinc-900 px-1.5 py-0.5 rounded">generate-prompt-portal.ps1</span> from the PromptPortal folder to refresh.
+        Generated: 2026-06-17 19:48 • Run <span class="font-mono bg-zinc-900 px-1.5 py-0.5 rounded">generate-prompt-portal.ps1</span> from the PromptPortal folder to refresh.
       </div>
       <div class="flex items-center gap-x-4">
         <button onclick="showHelp()" class="hover:text-zinc-300 transition-colors flex items-center gap-x-1.5">
@@ -1259,6 +1259,55 @@ Filters to apply across both tasks:
 * Add a "Watchlist Priority" tag: URGENT (act within 1–2 days) / MONITOR (watch over next week) / RESEARCH (needs more confirmation)
 
 End with a ranked shortlist of top 5 stocks to watch today, sorted by conviction level — covering both confirmed catalysts and high-credibility speculation plays.`,
+  'indian_mutual_funds': `You are a financial research assistant. Go to a Mutual Funds data source (such as Trendlyne, Tickertape, Value Research, Screener.in, or NSE/BSE bulk deal data).
+
+For the current week, find and summarize:
+
+Stocks being BOUGHT / Allocation INCREASED by Mutual Funds
+
+Stock name & ticker symbol
+
+Which fund(s) bought or increased allocation
+
+Number of shares purchased
+
+Approximate amount spent (in ₹ crore or $ million)
+
+Previous allocation % vs Current allocation %
+
+Change in allocation (e.g., +1.2%)
+
+Stocks being SOLD / Allocation DECREASED by Mutual Funds
+
+Stock name & ticker symbol
+
+Which fund(s) sold or reduced allocation
+
+Number of shares sold
+
+Approximate amount received
+
+Previous allocation % vs Current allocation %
+
+Change in allocation (e.g., -0.8%)
+
+New Entries — Stocks added fresh to a fund's portfolio this week (previously 0% allocation)
+
+Complete Exits — Stocks fully removed from a fund's portfolio this week (now 0% allocation)
+
+Summary Table with columns:Stock | Action | Fund Name | Shares | Amount | Prev Allocation % | New Allocation % | Change %
+
+Focus on:
+
+Large-cap and mid-cap notable movements
+
+Any stock with unusually high buy/sell or allocation shift activity
+
+Top 5 stocks with highest allocation increase and top 5 with highest allocation decrease this week
+
+Flag any stock where multiple funds simultaneously increased or decreased allocation (consensus move)
+
+Source the data from SEBI disclosures, fund factsheets, or bulk/block deal data from NSE/BSE for the current week.`,
   'usa_market_news': `Here's your fully updated USA Stock Analysis Prompt, mirroring the same enhanced structure as the Indian markets version:
 
 🇺🇸 USA Stock Market Deep Analysis Prompt (Enhanced Edition)
@@ -2508,6 +2557,7 @@ Rules:
   { id: 'indian_results_week', title: 'Indian Results Week', region: 'India', emoji: '', subtitle: 'Weekly results & earnings analysis', file: '../Analysis/India\Indian_Results_Week.docx' },
   { id: 'indian_stock_analysis', title: 'Indian Stock Analysis', region: 'India', emoji: '', subtitle: 'In-depth stock & sector research', file: '../Analysis/India\Indian_Stock_Analysis.docx' },
   { id: 'indian_stock_predictions', title: 'Indian Stock Predictions', region: 'India', emoji: '', subtitle: 'Forward-looking price & trend forecasts', file: '../Analysis/India\Indian_Stock_Predictions.docx' },
+  { id: 'indian_mutual_funds', title: 'Indian Mutual Funds', region: 'India', emoji: '', subtitle: 'Mutual fund schemes, performance & recommendations', file: '../Analysis/India\Indian_Mutual_Funds.docx' },
   { id: 'usa_market_news', title: 'USA Market News', region: 'USA', emoji: '', subtitle: 'Stocks with positive catalysts & developments', file: '../Analysis/USA\USA_Market_News.docx' },
   { id: 'usa_results_week', title: 'USA Results Week', region: 'USA', emoji: '', subtitle: 'Weekly results & earnings analysis', file: '../Analysis/USA\USA_Results_Week.docx' },
   { id: 'usa_stock_analysis', title: 'USA Stock Analysis', region: 'USA', emoji: '', subtitle: 'In-depth stock & sector research', file: '../Analysis/USA\USA_Stock_Analysis.docx' },
@@ -2664,13 +2714,13 @@ Rules:
 
     function copyAllPaths() {
       const txt = PROMPT_META.map(m => m.file).join('\n');   // paths already include ../Analysis prefix
-      copyToClipboard(txt, 'All 9 relative paths copied (../Analysis)');
+      copyToClipboard(txt, 'All 10 relative paths copied (../Analysis)');
     }
 
     function showHelp() {
       const msg = `How to use this portal:
 
-1. Click any of the 9 cards (India or USA) to open its prompt.
+1. Click any of the 10 cards (India or USA) to open its prompt.
 2. The prompt ALWAYS includes today's date in the correct timezone:
    - India prompts → IST (Asia/Kolkata)
    - USA prompts → CST (America/Chicago)

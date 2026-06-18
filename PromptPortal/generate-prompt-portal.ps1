@@ -118,6 +118,7 @@ $entries = @(
     @{ id='indian_results_week'; title='Indian Results Week'; region='India'; emoji=''; subtitle='Weekly results & earnings analysis'; rel='India\Indian_Results_Week.docx' }
     @{ id='indian_stock_analysis'; title='Indian Stock Analysis'; region='India'; emoji=''; subtitle='In-depth stock & sector research'; rel='India\Indian_Stock_Analysis.docx' }
     @{ id='indian_stock_predictions'; title='Indian Stock Predictions'; region='India'; emoji=''; subtitle='Forward-looking price & trend forecasts'; rel='India\Indian_Stock_Predictions.docx' }
+    @{ id='indian_mutual_funds'; title='Indian Mutual Funds'; region='India'; emoji=''; subtitle='Mutual fund schemes, performance & recommendations'; rel='India\Indian_Mutual_Funds.docx' }
     @{ id='usa_market_news'; title='USA Market News'; region='USA'; emoji=''; subtitle='Stocks with positive catalysts & developments'; rel='USA\USA_Market_News.docx' }
     @{ id='usa_results_week'; title='USA Results Week'; region='USA'; emoji=''; subtitle='Weekly results & earnings analysis'; rel='USA\USA_Results_Week.docx' }
     @{ id='usa_stock_analysis'; title='USA Stock Analysis'; region='USA'; emoji=''; subtitle='In-depth stock & sector research'; rel='USA\USA_Stock_Analysis.docx' }
